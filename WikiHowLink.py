@@ -52,7 +52,7 @@ Please add a comment linking to the source article, then [message the mods](http
 					user_agent='')
 
 	subreddit = reddit.subreddit('disneyvacation')
-	submissions = subreddit.new(limit=20)
+	submissions = subreddit.new(limit=50)
 
 	#gets url of newest posts on disneyvacation
 	for submission in submissions:
