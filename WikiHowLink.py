@@ -21,7 +21,7 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 					password='')
 					
 					
-	submission = reddit.submission(url = link)
+	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
 	# Prevents exception (AttributeError: 'MoreComments' object has no attribute 'body')
@@ -59,4 +59,4 @@ Please add a comment linking to the source article, then [message the mods](http
 		#Goes to next loop iteration if post was made less than 10 minutes ago
 		if minutes_posted(submission) < 10:
 			continue
-		reddit_bot(submission.url, submission.title, post_link_reminder_text)
+		reddit_bot(submission.permalink, submission.title, post_link_reminder_text)
