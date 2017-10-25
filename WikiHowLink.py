@@ -20,7 +20,8 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 					username='',
 					password='')
 					
-					
+	
+	wikihow_domains = [ 'wikihow.com/','wikihow.mom/']	# Different possible wikihow domains
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
@@ -30,7 +31,7 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 	
 	#searches through top-level comments and checks if there is a wikihow link in them
 	for top_level_comment in submission.comments:
-		if 'wikihow.com/' in top_level_comment.body:
+		if any(urls in top_level_comment.body for urls in wikihow_domains): # Checks if any wikihow domains are linked in the comments
 			wikihowlink = True
 			
 	if wikihowlink == False:
