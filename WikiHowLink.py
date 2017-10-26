@@ -20,8 +20,9 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 					username='',
 					password='')
 					
-					
-	submission = reddit.submission(url = link)
+	
+	wikihow_domains = [ 'wikihow.com/','wikihow.mom/']	# Different possible wikihow domains
+	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
 	# Prevents exception (AttributeError: 'MoreComments' object has no attribute 'body')
@@ -30,7 +31,7 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 	
 	#searches through top-level comments and checks if there is a wikihow link in them
 	for top_level_comment in submission.comments:
-		if 'wikihow.com/' in top_level_comment.body:
+		if any(urls in top_level_comment.body for urls in wikihow_domains): # Checks if any wikihow domains are linked in the comments
 			wikihowlink = True
 			
 	if wikihowlink == False:
@@ -59,4 +60,4 @@ Please add a comment linking to the source article, then [message the mods](http
 		#Goes to next loop iteration if post was made less than 10 minutes ago
 		if minutes_posted(submission) < 10:
 			continue
-		reddit_bot(submission.url, submission.title, post_link_reminder_text)
+		reddit_bot(submission.permalink, submission.title, post_link_reminder_text)
