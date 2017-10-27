@@ -30,7 +30,7 @@ def sticky_and_delete(link):
 		
 	submission.mod.remove() #deletes the post
 	
-def reddit_bot(link, title, reminder):
+def comment_on_post(link, title, reminder):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
 If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
 	reddit = praw.Reddit(client_id='',
@@ -79,4 +79,4 @@ Please add a comment linking to the source article, then [message the mods](http
 		#Goes to next loop iteration if post was made less than 10 minutes ago
 		if minutes_posted(submission) < 10:
 			continue
-		reddit_bot(submission.permalink, submission.title, post_link_reminder_text)
+		comment_on_post(submission.permalink, submission.title, post_link_reminder_text)
