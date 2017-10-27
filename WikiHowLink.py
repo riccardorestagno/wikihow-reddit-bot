@@ -40,7 +40,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 					password='')
 					
 	
-	wikihow_domains = [ 'wikihow.com/','wikihow.mom/']	# Different possible wikihow domains
+	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/']	# Different possible wikihow domains
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
