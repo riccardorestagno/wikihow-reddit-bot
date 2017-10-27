@@ -11,9 +11,28 @@ def minutes_posted(submission):
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
 
+def sticky_and_delete(link):
+	""" Post where wikihow bot made a comment in is called and the comment is stickied and the post is deleted"""
+	reddit = praw.Reddit(client_id='',
+		client_secret= '',
+		user_agent='',
+		username='',
+		password='')
+		
+	submission = reddit.submission(url = 'https://www.reddit.com' + link)
+	submission.comments.replace_more(limit=0)
+	
+	#Searched for wikihowbots post and pins it to top
+	for top_level_comment in submission.comments:
+		if top_level_comment.author == 'WikiHowLinkBot':
+			top_level_comment.mod.distinguish(how='yes', sticky=True)
+		break
+		
+	submission.mod.remove() #deletes the post
+	
 def reddit_bot(link, title, reminder):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
-If true, post is skipped. If false, comment is made on post, then it is deleted"""
+If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
 	reddit = praw.Reddit(client_id='',
 					client_secret= '',
 					user_agent='',
@@ -37,9 +56,9 @@ If true, post is skipped. If false, comment is made on post, then it is deleted"
 	if wikihowlink == False:
 		print(title)
 		submission.reply(reminder) #replys to post
-		submission.mod.remove() #deletes the post
-		time.sleep(5) # Prevents praw from detecting spam
-
+		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
+		sticky_and_delete(link)	
+		
 if __name__ == "__main__":
 	post_link_reminder_text = """Hello user. Thank you for your submission. However, it has been removed for the following reason(s):  
 
