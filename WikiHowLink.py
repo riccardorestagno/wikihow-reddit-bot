@@ -26,7 +26,7 @@ def sticky_and_delete(link):
 	for top_level_comment in submission.comments:
 		if top_level_comment.author == 'WikiHowLinkBot':
 			top_level_comment.mod.distinguish(how='yes', sticky=True)
-		break
+			break
 		
 	submission.mod.remove() #deletes the post
 	
