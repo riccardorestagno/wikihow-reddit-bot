@@ -40,7 +40,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 					password='')
 					
 	
-	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/']	# Different possible wikihow domains
+	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/','wikihow.pet/']	# Different possible wikihow domains
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
@@ -55,9 +55,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
 			
 	if wikihowlink == False:
 		print(title)
-		submission.reply(reminder) #replys to post
+		print('https://www.reddit.com' + link)
+		webbrowser.open_new_tab('https://www.reddit.com' + link)
+		submission.reply(reminder) #replys to post#
+		print("Reply done")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link)	
+		print("Sticky done")
+		#time.sleep(60) # Gives Xalaxis time to check the bot is working	
 		
 if __name__ == "__main__":
 	post_link_reminder_text = """Hello user. Thank you for your submission. However, it has been removed for the following reason(s):  
