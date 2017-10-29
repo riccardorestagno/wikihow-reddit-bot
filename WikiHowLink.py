@@ -57,7 +57,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		print(title)
 		print('https://www.reddit.com' + link)
 		webbrowser.open_new_tab('https://www.reddit.com' + link)
-		submission.reply(reminder) #replys to post#
+		submission.reply(reminder) #replys to post
 		print("Reply done")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link)	
