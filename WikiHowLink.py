@@ -45,6 +45,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 					
 	
 	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/','wikihow.pet/']	# Different possible wikihow domains
+	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth']
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
@@ -54,8 +55,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	
 	#searches through top-level comments and checks if there is a wikihow link in them
 	for top_level_comment in submission.comments:
-		if any(urls in top_level_comment.body for urls in wikihow_domains): # Checks if any wikihow domains are linked in the comments
+		# Checks if any wikihow domains are linked in the comments or if mods already replied to post
+		if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods in top_level_comment.author for mods in disneyvacation_mods):
 			wikihowlink = True
+			break
 			
 	if wikihowlink == False:
 		print(title)
