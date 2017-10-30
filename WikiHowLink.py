@@ -71,7 +71,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link, filepath)	
 		print("Sticky done")
-		#time.sleep(60) # Gives Xalaxis time to check the bot is working	
+		#time.sleep(60) # Gives Xalaxis time to check the bot is working
+	else:
+		with open(filepath, 'a') as outputfile:
+			outputfile.writelines("Title of post searched: " + title + " - Post included wikihow link in comments so no changes were made by the bot.\n")
 		
 if __name__ == "__main__":
 	filepath = r"C:\Users\......\WikiHowBotLog.txt"
