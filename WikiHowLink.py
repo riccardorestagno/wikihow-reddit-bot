@@ -67,7 +67,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.reply(reminder) #replys to post
 		print("Reply done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Title of post searched: " + title + " - Post didn not include wikihow link in comments. The bot successfully replied to the post")
+			outputfile.writelines("Title of post searched: " + title + " - Post didn't not include wikihow link in comments. The bot successfully replied to the post")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link, filepath)	
 		print("Sticky done")
