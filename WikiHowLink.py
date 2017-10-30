@@ -56,7 +56,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	#searches through top-level comments and checks if there is a wikihow link in them
 	for top_level_comment in submission.comments:
 		# Checks if any wikihow domains are linked in the comments or if mods already replied to post
-		if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods in top_level_comment.author for mods in disneyvacation_mods):
+		if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
 			wikihowlink = True
 			break
 			
