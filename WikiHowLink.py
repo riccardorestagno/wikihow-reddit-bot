@@ -49,16 +49,18 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
-	# Prevents exception (AttributeError: 'MoreComments' object has no attribute 'body')
-	# For more info, go to (http://praw.readthedocs.io/en/latest/tutorials/comments.html) 
-	submission.comments.replace_more(limit=0)
-	
-	#searches through top-level comments and checks if there is a wikihow link in them
-	for top_level_comment in submission.comments:
-		# Checks if any wikihow domains are linked in the comments or if mods already replied to post
-		if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
-			wikihowlink = True
-			break
+	#Checks if post has meta tag
+	if submission.link_flair_text.lower() == 'meta':
+		wikihowlink = True
+		
+	if wikihowlink == False:	
+		submission.comments.replace_more(limit=0) #Prevents AttributeError exception
+		#searches through top-level comments and checks if there is a wikihow link in them
+		for top_level_comment in submission.comments:
+			# Checks if any wikihow domains are linked in the comments or if mods already replied to post
+			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
+				wikihowlink = True
+				break
 			
 	if wikihowlink == False:
 		print(title)
@@ -67,14 +69,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.reply(reminder) #replys to post
 		print("Reply done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Title of post searched: " + title + " - Post didn't not include wikihow link in comments. The bot successfully replied to the post")
+			outputfile.writelines("Title of post searched: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link, filepath)	
 		print("Sticky done")
 		#time.sleep(60) # Gives Xalaxis time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Title of post searched: " + title + " - Post included wikihow link in comments so no changes were made by the bot.\n")
+			outputfile.writelines("Title of post searched: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
 		
 if __name__ == "__main__":
 	filepath = r"C:\Users\......\WikiHowBotLog.txt"
