@@ -50,9 +50,12 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	wikihowlink = False
 
 	#Checks if post has meta tag
-	if submission.link_flair_text.lower() == 'meta':
-		wikihowlink = True
-		
+	try:
+		if submission.link_flair_text.lower() == 'meta':
+			wikihowlink = True
+	except AttributeError:
+		pass
+
 	if wikihowlink == False:	
 		submission.comments.replace_more(limit=0) #Prevents AttributeError exception
 		#searches through top-level comments and checks if there is a wikihow link in them
