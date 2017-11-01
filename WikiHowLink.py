@@ -102,4 +102,8 @@ Please add a comment linking to the source article, then [message the mods](http
 		#Goes to next loop iteration if post was made less than 10 minutes ago
 		if minutes_posted(submission) < 10:
 			continue
+			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
+		#Loop ends if post was made longer than 25 minutes ago
+		if minutes_posted(submission) > 25:
+			break
