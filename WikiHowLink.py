@@ -69,26 +69,27 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		print(title)
 		print('https://www.reddit.com' + link)
 		webbrowser.open_new_tab('https://www.reddit.com' + link)
-		submission.reply(reminder) #replys to post
+		submission.reply('Hey /u/' + submission.author.name + reminder) #replys to post
 		print("Reply done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Title of post searched: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post")
+			outputfile.writelines("Requirements FAILED: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link, filepath)	
 		print("Sticky done")
 		#time.sleep(60) # Gives Xalaxis time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Title of post searched: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
+			outputfile.writelines("Requirements PASSED: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
 		
 if __name__ == "__main__":
 	filepath = r"C:\Users\......\WikiHowBotLog.txt"
-	post_link_reminder_text = """Hello user. Thank you for your submission. However, it has been removed for the following reason(s):  
+	post_link_reminder_text = """ The mod team at /r/disneyvacation thanks you for your submission, however it has been removed for the following reason:  
 
 Rule 2: All posts must provide the source WikiHow article as a link in the comments.
 
+Please add a comment linking to the source article, then [message the mods](http://www.reddit.com/message/compose?to=%2Fr%2FDisneyVacation) and provide us with the link to the comment's section of your post.
 
-Please add a comment linking to the source article, then [message the mods](http://www.reddit.com/message/compose?to=%2Fr%2FDisneyVacation) and provide us with the link to the comment's section of your post."""
+If your post was related to internal discussion, please flair your post with the 'Meta' tag (Rule 6)"""
 
 	reddit = praw.Reddit(client_id='',
 					client_secret= '',
