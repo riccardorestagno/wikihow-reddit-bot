@@ -24,7 +24,7 @@ def sticky_and_delete(link, filepath):
 	
 	#Searched for wikihowbots post and pins it to top
 	for top_level_comment in submission.comments:
-		if top_level_comment.author == 'WikiHowLinkBot':
+		if top_level_comment.author.name == 'WikiHowLinkBot':
 			top_level_comment.mod.distinguish(how='yes', sticky=True)
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines(", the post has been stickied and distinguished")
