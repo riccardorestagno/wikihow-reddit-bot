@@ -104,7 +104,9 @@ If your post was related to internal discussion, please flair your post with the
 		if minutes_posted(submission) < 10:
 			continue
 			
+		#Loop ends if post was made longer than 22 minutes ago
+		if minutes_posted(submission) > 22:
+			break	
+			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
-		#Loop ends if post was made longer than 25 minutes ago
-		if minutes_posted(submission) > 25:
-			break
+
