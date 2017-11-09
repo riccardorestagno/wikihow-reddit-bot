@@ -68,15 +68,15 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	if wikihowlink == False:
 		print(title)
 		print('https://www.reddit.com' + link)
-		webbrowser.open_new_tab('https://www.reddit.com' + link)
-		submission.reply('Hey /u/' + submission.author.name + reminder) #replys to post
+		# webbrowser.open_new_tab('https://www.reddit.com' + link)
+		submission.reply('Hey /u/' + submission.author.name + " ." + reminder) #replys to post
 		print("Reply done")
 		with open(filepath, 'a') as outputfile:
 			outputfile.writelines("Requirements FAILED: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
 		sticky_and_delete(link, filepath)	
 		print("Sticky done")
-		#time.sleep(60) # Gives Xalaxis time to check the bot is working
+		time.sleep(20) # Gives Xalaxis time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
 			outputfile.writelines("Requirements PASSED: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
