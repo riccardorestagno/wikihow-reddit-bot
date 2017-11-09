@@ -10,19 +10,6 @@ def minutes_posted(submission):
 	time_posted = datetime.utcfromtimestamp(time_created)
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
-
-def sticky_and_delete(link, filepath):
-	""" Post where wikihow bot made a comment in is called and the comment is stickied and the post is deleted"""
-	reddit = praw.Reddit(client_id='',
-		client_secret= '',
-		user_agent='',
-		username='',
-		password='')
-		
-	submission = reddit.submission(url = 'https://www.reddit.com' + link)
-	submission.mod.remove() #deletes the post
-	with open(filepath, 'a') as outputfile:
-		outputfile.writelines(", the post has been deleted!!\n")
 	
 def comment_on_post(link, title, reminder, filepath):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
@@ -32,10 +19,9 @@ If true, post is skipped. If false, comment is made on post, then another defini
 					user_agent='',
 					username='',
 					password='')
-					
-	
+				
 	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/','wikihow.pet/']	# Different possible wikihow domains
-	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth', 'AugustusTheWolf', 'WikiHowLinkBot']
+	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth', 'AugustusTheWolf', 'Improbably_wrong', 'WikiHowLinkBot']
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
@@ -50,8 +36,6 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.comments.replace_more(limit=0) #Prevents AttributeError exception
 		#searches through top-level comments and checks if there is a wikihow link in them
 		for top_level_comment in submission.comments:
-			# if top_level_comment.removed == True: #This comment is removed, we don't want to check it's contents for anything
-			# 	break
 			# Checks if any wikihow domains are linked in the comments or if mods already replied to post
 			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
 				wikihowlink = True
@@ -64,9 +48,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.reply('Hey /u/' + submission.author.name + " ." + reminder).mod.distinguish(how='yes', sticky=True) #replys to post and stickies the reply + distinguish
 		print("Reply + sticky and distinguish done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Requirements FAILED: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post and distinguished + stickied it's comment")
-		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
-		deletepost(link, filepath)	
+			outputfile.writelines("Requirements FAILED: " + title + \
+	" - Post did not include wikihow link in comments. The bot successfully replied to the post and distinguished + stickied it's comment and the post has been deleted!!\n")
+		time.sleep(3) # Prevents praw from detecting spam
+		submission.mod.remove() #deletes the post	
 		print("Delete done")
 		# time.sleep(20) # Gives time to check the bot is working
 	else:
