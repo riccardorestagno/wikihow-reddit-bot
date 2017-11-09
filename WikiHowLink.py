@@ -20,19 +20,9 @@ def sticky_and_delete(link, filepath):
 		password='')
 		
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
-	submission.comments.replace_more(limit=0)
-	
-	#Searched for wikihowbots post and pins it to top
-	for top_level_comment in submission.comments:
-		if top_level_comment.author.name == 'WikiHowLinkBot':
-			top_level_comment.mod.distinguish(how='yes', sticky=True)
-			with open(filepath, 'a') as outputfile:
-				outputfile.writelines(", the post has been stickied and distinguished")
-			break
-		
 	submission.mod.remove() #deletes the post
 	with open(filepath, 'a') as outputfile:
-		outputfile.writelines(", and has been deleted!!\n")
+		outputfile.writelines(", the post has been deleted!!\n")
 	
 def comment_on_post(link, title, reminder, filepath):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
@@ -71,14 +61,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		print(title)
 		print('https://www.reddit.com' + link)
 		# webbrowser.open_new_tab('https://www.reddit.com' + link)
-		submission.reply('Hey /u/' + submission.author.name + " ." + reminder) #replys to post
-		print("Reply done")
+		submission.reply('Hey /u/' + submission.author.name + " ." + reminder).mod.distinguish(how='yes', sticky=True) #replys to post and stickies the reply + distinguish
+		print("Reply + sticky and distinguish done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Requirements FAILED: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post")
+			outputfile.writelines("Requirements FAILED: " + title + " - Post did not include wikihow link in comments. The bot successfully replied to the post and distinguished + stickied it's comment")
 		time.sleep(7) # Prevents praw from detecting spam and also gives enough time for reply to register before calling sticky_and_delete
-		sticky_and_delete(link, filepath)	
-		print("Sticky done")
-		# time.sleep(20) # Gives Xalaxis time to check the bot is working
+		deletepost(link, filepath)	
+		print("Delete done")
+		# time.sleep(20) # Gives time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
 			outputfile.writelines("Requirements PASSED: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
