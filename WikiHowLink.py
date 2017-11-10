@@ -48,16 +48,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.reply('Hey /u/' + submission.author.name + " ." + reminder).mod.distinguish(how='yes', sticky=True) #replys to post and stickies the reply + distinguish
 		print("Reply + sticky and distinguish done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Requirements FAILED: " + title + \
-	" - Post did not include wikihow link in comments. The bot successfully replied to the post and distinguished + stickied it's comment and the post has been deleted!!\n")
+			outputfile.writelines("Req's FAILED: " + title + " (https://www.reddit.com" + link + ")\n")
 		time.sleep(3) # Prevents praw from detecting spam
 		submission.mod.remove() #deletes the post	
 		print("Delete done")
 		# time.sleep(20) # Gives time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Requirements PASSED: " + title + " - Post included wikihow link in comments or had a meta tag.\n")
-		
+			outputfile.writelines("Req's PASSED: " + title + "\n")
 if __name__ == "__main__":
 	filepath = r"C:\Users\......\WikiHowBotLog.txt"
 	post_link_reminder_text = """ The mod team at /r/disneyvacation thanks you for your submission, however it has been removed for the following reason:  
