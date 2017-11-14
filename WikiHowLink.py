@@ -10,7 +10,25 @@ def minutes_posted(submission):
 	time_posted = datetime.utcfromtimestamp(time_created)
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
+
+def source_added_check():
+	wikihow_domains = [ 'wikihow.com/','wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
 	
+	reddit = praw.Reddit(client_id='',
+			client_secret= '',
+			user_agent='WikiHow Bot',
+			username='',
+			password='')
+						
+	bot_inbox = reddit.inbox.comment_replies()
+	
+	for message in bot_inbox:
+		if any(urls in message.body for urls in wikihow_domains): #checks if reply contains a wikihow url
+			message.parent().mod.remove() #deletes the bots comment
+			message.mod.remove() #deletes user comment
+			message.submission.reply(message.body) #replies to post with wikihow source link
+			message.submission.mod.approve() #approves the post
+			
 def comment_on_post(link, title, reminder, filepath):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
 If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
@@ -85,3 +103,4 @@ If your post was related to internal discussion, please flair your post with the
 			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
 
+	source_added_check()
