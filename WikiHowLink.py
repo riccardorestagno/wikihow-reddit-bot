@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
 Rule 2: All posts must provide the source WikiHow article as a link in the comments.
 
-Please add a comment linking to the source article, then [message the mods](http://www.reddit.com/message/compose?to=%2Fr%2FDisneyVacation) and provide us with the link to the comment's section of your post.
+Please reply to THIS COMMENT with the RAW source article (no hyperlink or any other text), and your post will be approved within at most 10 minutes.
 
 If your post was related to internal discussion, please flair your post with the 'Meta' tag (Rule 6)"""
 
