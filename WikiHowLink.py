@@ -11,16 +11,17 @@ def minutes_posted(submission):
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
 
-def source_added_check():
+def source_added_check(filepath):
 	wikihow_domains = [ 'wikihow.com/','wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
 	
 	reddit = praw.Reddit(client_id='',
 			client_secret= '',
-			user_agent='WikiHow Bot',
+			user_agent='',
 			username='',
 			password='')
 						
-	bot_inbox = reddit.inbox.comment_replies()
+	bot_inbox = reddit.inbox.unread(limit=None) #only checks unread messages
+	unread_messages = []
 	
 	for message in bot_inbox:
 		if any(urls in message.body for urls in wikihow_domains): #checks if reply contains a wikihow url
@@ -28,7 +29,13 @@ def source_added_check():
 			message.mod.remove() #deletes user comment
 			message.submission.reply(message.body) #replies to post with wikihow source link
 			message.submission.mod.approve() #approves the post
+			with open(filepath, 'a') as outputfile:
+				outputfile.writelines("Post RE-APPROVED: " + message.submission.title + " (https://www.reddit.com" + message.submission.permalink + ")\n")
 			
+		unread_messages.append(message) #creates a list of all unread messages
+		
+	reddit.inbox.mark_read(unread_messages)	#marks all checked messages as read
+	
 def comment_on_post(link, title, reminder, filepath):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
 If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
@@ -103,4 +110,4 @@ If your post was related to internal discussion, please flair your post with the
 			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
 
-	source_added_check()
+	source_added_check(filepath)
