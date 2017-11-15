@@ -30,7 +30,7 @@ def source_added_check(filepath):
 			message.submission.reply(message.body) #replies to post with wikihow source link
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
-				outputfile.writelines("Post RE-APPROVED: " + message.submission.title + " (https://www.reddit.com" + message.submission.permalink + ")\n")
+				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 			
 		unread_messages.append(message) #creates a list of all unread messages
 		
@@ -73,14 +73,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.reply('Hey /u/' + submission.author.name + " ." + reminder).mod.distinguish(how='yes', sticky=True) #replys to post and stickies the reply + distinguish
 		print("Reply + sticky and distinguish done")
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Req's FAILED: " + title + " (https://www.reddit.com" + link + ")\n")
+			outputfile.writelines("Req's FAILED - " + title + " (www.reddit.com" + link + ")\n")
 		time.sleep(3) # Prevents praw from detecting spam
 		submission.mod.remove() #deletes the post	
 		print("Delete done")
 		# time.sleep(20) # Gives time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
-			outputfile.writelines("Req's PASSED: " + title + "\n")
+			outputfile.writelines("Req's PASSED - " + title + "\n")
 if __name__ == "__main__":
 	filepath = r"C:\Users\......\WikiHowBotLog.txt"
 	post_link_reminder_text = """ The mod team at /r/disneyvacation thanks you for your submission, however it has been removed for the following reason:  
