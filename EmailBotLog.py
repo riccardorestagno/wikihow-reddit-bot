@@ -25,7 +25,7 @@ def clear_textfile(filepath):
 		for line in lines:
 			clearfile.write(line)
 			i+=1
-			if i == 2:
+			if i == 3:
 				break
 			
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 	date_formatted = last_week.strftime("%Y-%m-%d")
 
 	with open(filepath, 'r') as output:
-		email_body = output.read()
+		email_body = output.read().replace(':', '')
 		
 	send_email(email_body, date_formatted)
 	clear_textfile(filepath)
