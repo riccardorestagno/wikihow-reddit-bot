@@ -11,6 +11,20 @@ def minutes_posted(submission):
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
 
+def mobile_to_desktop_link(mobile_link, post_reapproval):
+	""" Converts moble link to desktop link"""
+	
+	desktop_link = mobile_link.rsplit('m.wikihow.', 1)[1] #removes hyperlinks
+	desktop_link = 'www.wikihow.' + desktop_link.rsplit('?', 1)[0] #removes redirects
+	desktop_link = desktop_link.rsplit('amp=', 1)[0] # removes 'amp' mobile tag
+	if ')' in desktop_link: #removes end bracket in hyperlink if user added any
+		desktop_link = desktop_link.replace(')', '')
+		
+	if post_reapproval == True:	
+		return desktop_link
+	else:
+		return 'Desktop Link: ' + desktop_link
+	
 def source_added_check(filepath):
 	wikihow_domains = [ 'wikihow.com/','wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
 	
@@ -27,7 +41,12 @@ def source_added_check(filepath):
 		if any(urls in message.body for urls in wikihow_domains): #checks if reply contains a wikihow url
 			message.parent().mod.remove() #deletes the bots comment
 			message.mod.remove() #deletes user comment
-			message.submission.reply(message.body) #replies to post with wikihow source link
+			if 'm.wikihow.' in message.body: #If mobile link is given, convert mobile to desktop link
+				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True))
+				with open(filepath, 'a') as outputfile:
+						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+			else:
+				message.submission.reply(message.body) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
@@ -67,6 +86,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
 			# Checks if any wikihow domains are linked in the comments or if mods already replied to post
 			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
 				wikihowlink = True
+				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link
+					submission.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
+					with open(filepath, 'a') as outputfile:
+						outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
 				break
 			
 	if wikihowlink == False:
