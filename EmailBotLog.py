@@ -1,7 +1,11 @@
-import smtplib
+import os
 from datetime import date, timedelta
+import smtplib
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 
-def send_email(body, date):
+def send_email(sender, recipients, attachment):
 
 	email_server = smtplib.SMTP('smtp.gmail.com', 587)
 	email_server.ehlo()
@@ -10,11 +14,27 @@ def send_email(body, date):
 
 	email_server.login('', '')
 
-	email_server.sendmail('From: ', 'To: ',\
-	'Subject: WikiHowLink Bot Log for Week of ' + date + '\n' + body)
+	email_server.sendmail(sender, recipients, attachment)
 
 	email_server.quit()
 
+def attachment(sender, recipients, date):
+	""" Creates attachment using MIMEMultipart (see: https://gist.github.com/rdempsey/22afd43f8d777b78ef22)"""
+	msg = MIMEMultipart()
+	msg['Subject'] = "WikiHowLink Bot Log for Week of " + date
+	msg['From'] = sender
+	msg['To'] = recipients
+	
+	part = MIMEBase('application', "octet-stream")
+	part.set_payload(open(filepath, "rb").read())
+	encoders.encode_base64(part)
+	
+	part.add_header('Content-Disposition', 'attachment', filename=os.path.basename(filepath))
+
+	msg.attach(part)
+	composed = msg.as_string()
+	
+	return composed
 def clear_textfile(filepath):
 	i=0
 	file = open(filepath,"r")
@@ -25,17 +45,18 @@ def clear_textfile(filepath):
 		for line in lines:
 			clearfile.write(line)
 			i+=1
-			if i == 3:
+			if i == 4:
 				break
 			
 if __name__ == '__main__':
 	filepath = r"C:\Users\....\WikiHowBotLog.txt"
 	
-	last_week = date.today() - timedelta(7)
+	sender = ''
+	recipients = ['']
+	recipients = ', '.join(recipients)
+	
+	last_week = datetime.today() - timedelta(7)
 	date_formatted = last_week.strftime("%Y-%m-%d")
-
-	with open(filepath, 'r') as output:
-		email_body = output.read().replace(':', '')
 		
-	send_email(email_body, date_formatted)
+	send_email(sender, recipients, attachment(sender, recipients, date_formatted))
 	clear_textfile(filepath)
