@@ -87,7 +87,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
 				wikihowlink = True
 				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link
-					submission.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
+					top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
 					with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
 				break
@@ -130,8 +130,8 @@ If your post was related to internal discussion, please flair your post with the
 		if minutes_posted(submission) < 10:
 			continue
 			
-		#Loop ends if post was made longer than 22 minutes ago
-		if minutes_posted(submission) > 22:
+		#Loop ends if post was made longer than 21 minutes ago
+		if minutes_posted(submission) > 21:
 			break	
 			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
