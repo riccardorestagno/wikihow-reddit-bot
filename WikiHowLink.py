@@ -14,12 +14,13 @@ def minutes_posted(submission):
 def mobile_to_desktop_link(mobile_link, post_reapproval):
 	""" Converts moble link to desktop link"""
 	
+	desktop_link = mobile_link
+	if '[' in desktop_link: #removes end bracket in hyperlink if user added any as well as any following text
+		desktop_link = desktop_link.rsplit(')', 1)[0]
 	desktop_link = mobile_link.rsplit('m.wikihow.', 1)[1] #removes hyperlinks
 	desktop_link = 'www.wikihow.' + desktop_link.rsplit('?', 1)[0] #removes redirects
 	desktop_link = desktop_link.rsplit('amp=', 1)[0] # removes 'amp' mobile tag
 	desktop_link = desktop_link.split('%', 1)[0]
-	if ')' in desktop_link: #removes end bracket in hyperlink if user added any
-		desktop_link = desktop_link.replace(')', '')
 		
 	if post_reapproval == True:	
 		return desktop_link
