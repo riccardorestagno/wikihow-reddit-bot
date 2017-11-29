@@ -48,7 +48,7 @@ def source_added_check(filepath):
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 			else:
-				message.submission.reply(message.body) #replies to post with wikihow source link provided
+				message.submission.reply('Source: ' + message.body) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
