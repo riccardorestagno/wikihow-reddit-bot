@@ -45,11 +45,11 @@ def source_added_check(filepath):
 			message.parent().mod.remove() #deletes the bots comment
 			message.mod.remove() #deletes user comment
 			if 'm.wikihow.' in message.body: #If mobile link is given, convert mobile to desktop link
-				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True))
+				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)).mod.distinguish(sticky=True)
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 			else:
-				message.submission.reply('Source: ' + message.body) #replies to post with wikihow source link provided
+				message.submission.reply('Source: ' + message.body).mod.distinguish(sticky=True) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
