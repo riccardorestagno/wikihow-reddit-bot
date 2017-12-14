@@ -11,6 +11,16 @@ def minutes_posted(submission):
 	time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
 	return time_difference_in_minutes
 
+def connect_to_reddit():
+	""" Connects the bot to the Reddit client"""
+	
+	reddit = praw.Reddit(client_id='',
+			client_secret= '',
+			user_agent='',
+			username='',
+			password='')
+	return reddit
+
 def mobile_to_desktop_link(mobile_link, post_reapproval):
 	""" Converts moble link to desktop link"""
 	
@@ -29,13 +39,13 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 		return 'Desktop Link: ' + desktop_link
 	
 def source_added_check(filepath):
+	""" Checks if source was added by searching theorugh all unread inbox replies for a wikihow link
+	If wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
+	POTENTIAL GLITCH: If the user replies a wikihow link to a non-removal comment, both comments can be deleted and an incorrect source can be added."""
+
 	wikihow_domains = [ 'wikihow.com/','wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
 	
-	reddit = praw.Reddit(client_id='',
-			client_secret= '',
-			user_agent='',
-			username='',
-			password='')
+	reddit = connect_to_reddit()
 						
 	bot_inbox = reddit.inbox.unread(limit=None) #only checks unread messages
 	unread_messages = []
@@ -61,13 +71,10 @@ def source_added_check(filepath):
 def comment_on_post(link, title, reminder, filepath):
 	"""If post was made longer than 10 minutes ago, module checks if wikihow link is a top-level comment
 If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
-	reddit = praw.Reddit(client_id='',
-					client_secret= '',
-					user_agent='',
-					username='',
-					password='')
+	
+	reddit = connect_to_reddit()
 				
-	wikihow_domains = [ 'wikihow.com/','wikihow.mom/','wikihow.life/','wikihow.pet/']	# Different possible wikihow domains
+	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
 	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth', 'AugustusTheWolf', 'Improbably_wrong', 'WikiHowLinkBot']
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
@@ -126,9 +133,7 @@ Please reply to THIS COMMENT with the RAW source article (no hyperlink or any ot
 
 If your post was related to internal discussion, please flair your post with the 'Meta' tag (Rule 6)"""
 
-	reddit = praw.Reddit(client_id='',
-					client_secret= '',
-					user_agent='')
+	reddit = connect_to_reddit()
 
 	subreddit = reddit.subreddit('disneyvacation')
 	submissions = subreddit.new(limit=50)
