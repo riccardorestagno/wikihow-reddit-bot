@@ -104,8 +104,8 @@ If true, post is skipped. If false, comment is made on post, then another defini
 							break
 					if comment_made == False:
 						top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
-					with open(filepath, 'a') as outputfile:
-						outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
+						with open(filepath, 'a') as outputfile:
+							outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
 				break
 			
 	if wikihowlink == False:
