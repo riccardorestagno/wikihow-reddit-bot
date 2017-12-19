@@ -43,7 +43,7 @@ def source_added_check(filepath):
 	If wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
 	POTENTIAL GLITCH: If the user replies a wikihow link to a non-removal comment, both comments can be deleted and an incorrect source can be added."""
 
-	wikihow_domains = [ 'wikihow.com/','wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
+	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/'] # Different possible wikihow domains
 	
 	reddit = connect_to_reddit()
 						
@@ -55,11 +55,11 @@ def source_added_check(filepath):
 			message.parent().mod.remove() #deletes the bots comment
 			message.mod.remove() #deletes user comment
 			if 'm.wikihow.' in message.body: #If mobile link is given, convert mobile to desktop link
-				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)).mod.distinguish(how='yes', sticky=True)
+				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)) #replies to post with wikihow source link provided (adjusted for mobile links)
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 			else:
-				message.submission.reply('Source: ' + message.body).mod.distinguish(how='yes', sticky=True) #replies to post with wikihow source link provided
+				message.submission.reply('Source: ' + message.body) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
@@ -74,7 +74,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	
 	reddit = connect_to_reddit()
 				
-	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/']	# Different possible wikihow domains
+	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/'] # Different possible wikihow domains
 	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth', 'AugustusTheWolf', 'Improbably_wrong', 'WikiHowLinkBot']
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
