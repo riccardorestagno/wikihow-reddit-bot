@@ -38,6 +38,12 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 	else:
 		return 'Desktop Link: ' + desktop_link
 	
+def plaintext_link_maker(comment):
+	"""Converts wikihow hyperlink comment to plain text"""
+	link_to_reply = comment.split('(', 1)[1]
+	link_to_reply = link_to_reply.rsplit(')', 1)[0]
+	return 'Plain Text Link: ' + link_to_reply
+
 def source_added_check(filepath):
 	""" Checks if source was added by searching theorugh all unread inbox replies for a wikihow link
 	If wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
@@ -106,6 +112,8 @@ If true, post is skipped. If false, comment is made on post, then another defini
 						top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
 						with open(filepath, 'a') as outputfile:
 							outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
+				elif '[' in top_level_comment.body:
+					top_level_comment.reply(plaintext_link_maker(top_level_comment.body))
 				break
 			
 	if wikihowlink == False:
