@@ -102,32 +102,22 @@ If true, post is skipped. If false, comment is made on post, then another defini
 			# Checks if any wikihow domains are linked in the comments or if mods already replied to post
 			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author for mods in disneyvacation_mods):
 				wikihowlink = True
-				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link
-					comment_made = False
-					for comment in top_level_comment.replies:# Checks if bot already replied with a desktop link
-						if comment.author.name == 'WikiHowLinkBot':
-							comment_made = True
-							break
-					if comment_made == False:
-						top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
-						with open(filepath, 'a') as outputfile:
-							outputfile.writelines("Desktop link added - " + title + " (www.reddit.com" + link + ")\n"
+				for comment in top_level_comment.replies:# Checks if bot already replied with a desktop link
+					if comment.author.name == 'WikiHowLinkBot':
+						return
+				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link					
+					top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
+						
 				elif '[' in top_level_comment.body:
 					top_level_comment.reply(plaintext_link_maker(top_level_comment.body))
 				break
 			
 	if wikihowlink == False:
-		print(title)
-		print('https://www.reddit.com' + link)
-		# webbrowser.open_new_tab('https://www.reddit.com' + link)
 		submission.reply('Hey /u/' + submission.author.name + " ." + reminder).mod.distinguish(how='yes', sticky=True) #replys to post and stickies the reply + distinguish
-		print("Reply + sticky and distinguish done")
 		with open(filepath, 'a') as outputfile:
 			outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
 		time.sleep(3) # Prevents praw from detecting spam
 		submission.mod.remove() #deletes the post	
-		print("Delete done")
-		# time.sleep(20) # Gives time to check the bot is working
 	else:
 		with open(filepath, 'a') as outputfile:
 			outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
