@@ -81,7 +81,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 	reddit = connect_to_reddit()
 				
 	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/'] # Different possible wikihow domains
-	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'UnculturedLout', 'sloth_on_meth', 'AugustusTheWolf', 'Improbably_wrong', 'WikiHowLinkBot']
+	disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'sloth_on_meth', 'Improbably_wrong', 'WikiHowLinkBot']
 	submission = reddit.submission(url = 'https://www.reddit.com' + link)
 	wikihowlink = False
 
