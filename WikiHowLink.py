@@ -108,7 +108,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link					
 					top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
 						
-				elif '[' in top_level_comment.body:
+				elif '](' in top_level_comment.body:
 					top_level_comment.reply(plaintext_link_maker(top_level_comment.body))
 				break
 			
