@@ -38,11 +38,14 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 	else:
 		return 'Desktop Link: ' + desktop_link
 	
-def plaintext_link_maker(comment):
+def plaintext_link_maker(comment, post_reapproval=False):
 	"""Converts wikihow hyperlink comment to plain text"""
 	link_to_reply = comment.split('(', 1)[1]
 	link_to_reply = link_to_reply.rsplit(')', 1)[0]
-	return 'Plain Text Link: ' + link_to_reply
+	if post_reapproval == True:	
+		return 'Source: ' + desktop_link
+	else:
+		return 'Desktop Link: ' + desktop_link
 
 def source_added_check(filepath):
 	""" Checks if source was added by searching theorugh all unread inbox replies for a wikihow link
@@ -64,6 +67,8 @@ def source_added_check(filepath):
 				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)) #replies to post with wikihow source link provided (adjusted for mobile links)
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+			elif '](' in message.body:
+				message.submission.reply(plaintext_link_maker(message.body, post_reapproval=True))
 			else:
 				message.submission.reply('Source: ' + message.body) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
