@@ -61,8 +61,14 @@ def source_added_check(filepath):
 	
 	for message in bot_inbox:
 		if any(urls in message.body for urls in wikihow_domains): #checks if reply contains a wikihow url
-			message.parent().mod.remove() #deletes the bots comment
-			message.mod.remove() #deletes user comment
+			
+			try:
+				message.parent().mod.remove() #deletes the bots comment
+				message.mod.remove() #deletes user comment
+			except AttributeError: #Error when checking DMs
+				reddit.inbox.mark_read([message])
+				continue
+				
 			if 'm.wikihow.' in message.body: #If mobile link is given, convert mobile to desktop link
 				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)) #replies to post with wikihow source link provided (adjusted for mobile links)
 				with open(filepath, 'a') as outputfile:
