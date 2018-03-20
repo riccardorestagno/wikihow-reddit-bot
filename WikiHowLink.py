@@ -49,8 +49,7 @@ def plaintext_link_maker(comment, post_reapproval=False):
 
 def source_added_check(filepath):
 	""" Checks if source was added by searching theorugh all unread inbox replies for a wikihow link
-	If wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
-	POTENTIAL GLITCH: If the user replies a wikihow link to a non-removal comment, both comments can be deleted and an incorrect source can be added."""
+	If wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post"""
 
 	wikihow_domains = [ 'wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/'] # Different possible wikihow domains
 	
@@ -60,7 +59,7 @@ def source_added_check(filepath):
 	unread_messages = []
 	
 	for message in bot_inbox:
-		if any(urls in message.body for urls in wikihow_domains): #checks if reply contains a wikihow url
+		if any(urls in message.body for urls in wikihow_domains) and message.submission.banned_by == "WikiHowLinkBot": #checks if reply contains a wikihow url
 			
 			try:
 				message.parent().mod.remove() #deletes the bots comment
