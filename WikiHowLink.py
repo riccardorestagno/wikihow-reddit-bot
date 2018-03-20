@@ -148,12 +148,12 @@ If your post was related to internal discussion, please flair your post with the
 
 	#gets url of newest posts on disneyvacation
 	for submission in submissions:
-		#Goes to next loop iteration if post was made less than 10 minutes ago
-		if minutes_posted(submission) < 10:
+		#Goes to next loop iteration if post was made less than 5 minutes ago
+		if minutes_posted(submission) < 5:
 			continue
 			
-		#Loop ends if post was made longer than 21 minutes ago
-		if minutes_posted(submission) > 21:
+		#Loop ends if post was made longer than 11 minutes ago
+		if minutes_posted(submission) > 11:
 			break	
 			
 		comment_on_post(submission.permalink, submission.title, post_link_reminder_text, filepath)
