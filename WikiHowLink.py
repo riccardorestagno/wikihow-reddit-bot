@@ -75,7 +75,7 @@ def source_added_check(filepath):
 			elif '](' in message.body:
 				message.submission.reply(plaintext_link_maker(message.body, post_reapproval=True))
 			else:
-				message.submission.reply('Source: ' + message.body) #replies to post with wikihow source link provided
+				message.submission.reply('Source: https://www.wikihow.' + message.body.split('.wikihow.')[1].split()[0]) #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
