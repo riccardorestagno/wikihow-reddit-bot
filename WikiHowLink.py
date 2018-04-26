@@ -69,13 +69,13 @@ def source_added_check(filepath):
 				continue
 				
 			if 'm.wikihow.' in message.body: #If mobile link is given, convert mobile to desktop link
-				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)) #replies to post with wikihow source link provided (adjusted for mobile links)
+				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)).mod.distinguish(how='yes') #replies to post with wikihow source link provided (adjusted for mobile links)
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 			elif '](' in message.body:
-				message.submission.reply(plaintext_link_maker(message.body, post_reapproval=True))
+				message.submission.reply(plaintext_link_maker(message.body, post_reapproval=True)).mod.distinguish(how='yes')
 			else:
-				message.submission.reply('Source: https://www.wikihow.' + message.body.split('.wikihow.')[1].split()[0]) #replies to post with wikihow source link provided
+				message.submission.reply('Source: https://www.wikihow.' + message.body.split('.wikihow.')[1].split()[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
 			message.submission.mod.approve() #approves the post
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
@@ -109,8 +109,11 @@ If true, post is skipped. If false, comment is made on post, then another defini
 		submission.comments.replace_more(limit=0) #Prevents AttributeError exception
 		#searches through top-level comments and checks if there is a wikihow link in them
 		for top_level_comment in submission.comments:
-			# Checks if any wikihow domains are linked in the comments or if mods already replied to post
-			if any(urls in top_level_comment.body for urls in wikihow_domains) or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
+			
+			# Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
+			if (top_level_comment.author.name == submission.author.name and any(urls in top_level_comment.body for urls in wikihow_domains)) \
+			or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
+				
 				wikihowlink = True
 				for comment in top_level_comment.replies:# Checks if bot already replied with a desktop link
 					if comment.author.name == 'WikiHowLinkBot':
