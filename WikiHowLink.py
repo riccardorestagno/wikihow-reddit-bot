@@ -72,7 +72,7 @@ def source_added_check(filepath):
 				message.submission.reply(mobile_to_desktop_link(message.body, post_reapproval = True)).mod.distinguish(how='yes') #replies to post with wikihow source link provided (adjusted for mobile links)
 				with open(filepath, 'a') as outputfile:
 						outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
-			elif '](' in message.body:
+			elif '](' in message.body and message.body.lower().count(".wikihow.") == 1:
 				message.submission.reply(plaintext_link_maker(message.body, post_reapproval=True)).mod.distinguish(how='yes')
 			else:
 				message.submission.reply('Source: https://www.wikihow.' + message.body.split('.wikihow.')[1].split()[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
@@ -121,7 +121,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 				if 'm.wikihow.' in top_level_comment.body: #If mobile link is given, convert mobile to desktop link					
 					top_level_comment.reply(mobile_to_desktop_link(top_level_comment.body, post_reapproval = False)) #replys with desktop link
 						
-				elif '](' in top_level_comment.body:
+				elif '](' in top_level_comment.body and top_level_comment.body.lower().count(".wikihow.") == 1:
 					top_level_comment.reply(plaintext_link_maker(top_level_comment.body))
 				break
 			
