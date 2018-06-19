@@ -40,7 +40,7 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 	
 def plaintext_link_maker(comment, post_reapproval=False):
 	"""Converts wikihow hyperlink comment to plain text"""
-	link_to_reply = comment.split('(', 1)[1]
+	link_to_reply = comment.split('](', 1)[1]
 	link_to_reply = link_to_reply.rsplit(')', 1)[0]
 	if post_reapproval == True:	
 		return 'Source: ' + desktop_link
