@@ -97,7 +97,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
 	#Checks if post has meta tag
 	try:
-		if (submission.link_flair_text.lower() == 'meta' and submission.domain.startswith('self.')) or submission.author.name in disneyvacation_mods::
+		if (submission.link_flair_text.lower() == 'meta' and submission.domain.startswith('self.')) or submission.author.name in disneyvacation_mods:
 			wikihowlink = True
 			with open(filepath, 'a') as outputfile:
 				outputfile.writelines("Post PASSED - " + title + " (Meta Tag)" + "\n")
