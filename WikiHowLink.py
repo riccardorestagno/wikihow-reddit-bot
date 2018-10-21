@@ -144,9 +144,7 @@ if __name__ == "__main__":
 	filepath = r"C:\Users\Riccardo\Desktop\Python Scripts\WikiHow Reddit Bot\WikiHowBotLog.txt"
 	post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
 
-Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes.
-
-If your post was related to internal discussion, please flair your post with the 'Meta' tag (Rule 6)"""
+Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
 						
 	reddit = connect_to_reddit()
 					
