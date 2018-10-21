@@ -152,5 +152,3 @@ Please reply to THIS COMMENT with the source article and your post will be appro
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
     source_added_check(filepath) #checks bots inbox for comment replies with wikihow link
-
-	source_added_check(filepath) #checks bots inbox for comment replies with wikihow link
