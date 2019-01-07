@@ -10,6 +10,7 @@ disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'sloth_on_meth', 'Improbably_wrong
 
 
 def repost_check(link, title, subreddit):
+  """Returns true if a repost occured"""
 
     reddit = connect_to_reddit()
 
@@ -27,6 +28,7 @@ def repost_check(link, title, subreddit):
                                  + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
                 time.sleep(3)  # Prevents PRAW from detecting spam
                 submission.mod.remove()  # Deletes the post
+                return True
 
             # Blatant Repost
             same_words = set.intersection(set(repost.title.split()), set(title.lower().split()))
@@ -38,6 +40,9 @@ def repost_check(link, title, subreddit):
                     + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
                 time.sleep(3)  # Prevents PRAW from detecting spam
                 submission.mod.remove()  # Deletes the post
+                return True
+              
+    return False
 
 
 def minutes_posted(submission):
@@ -191,8 +196,8 @@ Please reply to THIS COMMENT with the source article and your post will be appro
         if minutes_posted(post) > 12:
             break
 
-        comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
-
-        repost_check(post.url, post.title, subreddit_name)  # Checks for reposts (BETA)
+        # If its not a repost, then check for source
+        if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
+            comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
     source_added_check(filepath)  # Checks bots inbox for comment replies with wikihow link
