@@ -120,7 +120,7 @@ def source_added_check(filepath):
             elif '](' in message_provided and message_provided.lower().count(".wikihow.") == 1:
                 message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
             else:
-                message.submission.reply('Source: https://www.wikihow.' + message_provided.split('.wikihow.', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
+                message.submission.reply('User-provided source: https://www.wikihow.' + message_provided.split('.wikihow.', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
 
             message.submission.mod.approve()  # approves the post
             with open(filepath, 'a') as outputfile:
