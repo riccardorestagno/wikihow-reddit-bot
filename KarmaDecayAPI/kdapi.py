@@ -74,8 +74,11 @@ def check(url, subreddit, getLessSimilar=False):
     kd_url = "http://karmadecay.com/search?kdtoolver=b1&q=" + parse.quote(url) + "&subreddit=" + subreddit
     
     # user agent string for Chrome 41, karmadecay.com returns 401 for a "python-requests..." user agent
-    user_agent = {'User-agent': "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"}
-    request = requests.get(kd_url, headers=user_agent)
+    user_agent = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'}
+    try:
+        request = requests.get(kd_url, headers=user_agent, timeout=15)
+    except:
+        return []
     html = request.content
     request.close()
 
