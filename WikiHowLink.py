@@ -31,7 +31,7 @@ def repost_check(link, title, subreddit):
                 return True
 
             # Blatant Repost
-            same_words = set.intersection(set(repost.title.split()), set(title.lower().split()))
+            same_words = set.intersection(set(repost.title.lower().split()), set(title.lower().split()))
             if submission.score > 5000 and same_words >= 6:
                 submission.reply(
                     'Hey /u/' + submission.author.name + ". The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since"
