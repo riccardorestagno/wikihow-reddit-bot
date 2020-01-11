@@ -4,7 +4,7 @@ import kdapi.kdapi as kd
 import time
 from datetime import datetime, timedelta
 
-wikihow_domains = ['wikihow.com/', 'wikihow.mom/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/', 'wikihow.it/', 'wikihow.health/']
+wikihow_domains = ['wikihow.com/', 'wikihow.mom/', 'wikihow-fun.com', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/', 'wikihow.it/', 'wikihow.health/']
 disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'sloth_on_meth', 'Improbably_wrong', 'Quimpers', 'siouxsie_siouxv2',
                        'WikiHowLinkBot']
 
