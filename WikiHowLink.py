@@ -3,14 +3,11 @@ import praw
 import kdapi.kdapi as kd
 import time
 from datetime import datetime, timedelta
-
-wikihow_domains = ['wikihow.com/', 'wikihow.mom/', 'wikihow-fun.com/', 'wikihow.life/', 'wikihow.pet/', 'wikihow.fitness/', 'wikihow.it/', 'wikihow.health/']
-disneyvacation_mods = ['DaemonXI', 'Xalaxis', 'sloth_on_meth', 'Improbably_wrong', 'Quimpers', 'siouxsie_siouxv2',
-                       'WikiHowLinkBot']
+from credentials import *
 
 
 def repost_check(link, title, subreddit):
-  """Returns true if a repost occured"""
+    """Returns true if a repost occured"""
 
     reddit = connect_to_reddit()
 
@@ -41,7 +38,7 @@ def repost_check(link, title, subreddit):
                 time.sleep(3)  # Prevents PRAW from detecting spam
                 submission.mod.remove()  # Deletes the post
                 return True
-              
+
     return False
 
 
@@ -57,11 +54,11 @@ def minutes_posted(submission):
 def connect_to_reddit():
     """ Connects the bot to the Reddit client"""
 
-    reddit = praw.Reddit(client_id='',
-                         client_secret='',
-                         user_agent='',
-                         username='',
-                         password='')
+    reddit = praw.Reddit(client_id=CLIENT_ID,
+                         client_secret=CLIENT_SECRET,
+                         user_agent=USER_AGENT,
+                         username=USERNAME,
+                         password=PASSWORD)
     return reddit
 
 
@@ -70,8 +67,8 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
     desktop_link = mobile_link
     if '[' in desktop_link:  # removes end bracket in hyperlink if user added any as well as any following text
         desktop_link = desktop_link.rsplit(')', 1)[0]
-    desktop_link = desktop_link.rsplit('m.wikihow.', 1)[1]  # removes mobile hyperlinks
-    desktop_link = 'https://www.wikihow.' + desktop_link.split('?', 1)[0]  # removes additional parameters
+    desktop_link = desktop_link.rsplit('m.wikihow', 1)[1]  # removes mobile hyperlinks
+    desktop_link = 'https://www.wikihow' + desktop_link.split('?', 1)[0]  # removes additional parameters
     desktop_link = desktop_link.rsplit('amp=', 1)[0]  # removes 'amp' mobile tag
 
     if post_reapproval:
@@ -104,25 +101,25 @@ def source_added_check(filepath):
     for message in bot_inbox:
 
         message_provided = urllib.parse.unquote(message.body)
-        if any(urls in message_provided for urls in wikihow_domains) and message.submission.banned_by == "WikiHowLinkBot": #checks if reply contains a wikihow url
+        if ".wikihow" in message_provided.lower() and message.submission.banned_by == "WikiHowLinkBot":
 
             try:
-                message.parent().mod.remove()  # deletes the bots comment
-                message.mod.remove()  # deletes user comment
+                message.parent().mod.remove()  # Deletes the bots comment
+                message.mod.remove()  # Deletes user comment
             except AttributeError:
                 reddit.inbox.mark_read([message])
                 continue
 
-            if 'm.wikihow.' in message_provided:  # If mobile link is given, convert mobile to desktop link
-                message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval = True)).mod.distinguish(how='yes')
+            if 'm.wikihow' in message_provided:  # If mobile link is given, convert mobile to desktop link
+                message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
                 with open(filepath, 'a') as outputfile:
                         outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
-            elif '](' in message_provided and message_provided.lower().count(".wikihow.") == 1:
+            elif '](' in message_provided and message_provided.lower().count(".wikihow") == 1:
                 message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
             else:
-                message.submission.reply('User-provided source: https://www.wikihow.' + message_provided.split('.wikihow.', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
+                message.submission.reply('User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
 
-            message.submission.mod.approve()  # approves the post
+            message.submission.mod.approve()  # Approves the post
             with open(filepath, 'a') as outputfile:
                 outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 
@@ -150,7 +147,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
         for top_level_comment in submission.comments:
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
-            if (top_level_comment.author.name == submission.author.name and any(urls in comment_to_check for urls in wikihow_domains)) \
+            if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
             or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
 
                 wikihowlink = True
@@ -158,10 +155,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
                     if comment.author.name == 'WikiHowLinkBot':
                         return
 
-                if 'm.wikihow.' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
-                    top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval = False))  # replies with desktop link
+                if 'm.wikihow' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
+                    top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))  # replies with desktop link
 
-                elif '](' in comment_to_check and comment_to_check.lower().count(".wikihow.") == 1:
+                elif '](' in comment_to_check and comment_to_check.lower().count(".wikihow") == 1:
                     top_level_comment.reply(plaintext_link_maker(comment_to_check))
                 break
 
@@ -179,7 +176,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 if __name__ == "__main__":
 
     subreddit_name = 'disneyvacation'
-    filepath = r"C:\Users\Riccardo\Desktop\Python_Scripts\WikiHow Reddit Bot\WikiHowBotLog.txt"
+    filepath = FILEPATH_TO_LOGFILE
     post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
 
 Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
@@ -192,12 +189,12 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
-
         if minutes_posted(post) > 12:
             break
 
-        # If its not a repost, then check for source
-        if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
-            comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
+        # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
+        # if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
+        #   comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
+        comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
     source_added_check(filepath)  # Checks bots inbox for comment replies with wikihow link
