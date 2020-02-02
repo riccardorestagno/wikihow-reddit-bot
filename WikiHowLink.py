@@ -3,7 +3,7 @@ import praw
 #import kdapi.kdapi as kd
 import time
 from datetime import datetime, timedelta
-#from credentials import *
+from credentials import *
 from os import environ
 
 
