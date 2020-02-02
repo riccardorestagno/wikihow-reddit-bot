@@ -7,10 +7,10 @@ from datetime import datetime, timedelta
 from os import environ
 
 
-def repost_check(link, title, subreddit):
-    """Returns true if a repost occured"""
+# def repost_check(link, title, subreddit):
+#     """Returns true if a repost occured"""
 
-    reddit = connect_to_reddit()
+#     reddit = connect_to_reddit()
 
     # for repost in kd.check(link, subreddit):
     #     submission = reddit.submission(url=repost.link)
