@@ -1,9 +1,10 @@
 import urllib.parse
 import praw
-import kdapi.kdapi as kd
+#import kdapi.kdapi as kd
 import time
 from datetime import datetime, timedelta
-from credentials import *
+#from credentials import *
+from os import environ
 
 
 def repost_check(link, title, subreddit):
@@ -54,11 +55,11 @@ def minutes_posted(submission):
 def connect_to_reddit():
     """ Connects the bot to the Reddit client"""
 
-    reddit = praw.Reddit(client_id=CLIENT_ID,
-                         client_secret=CLIENT_SECRET,
-                         user_agent=USER_AGENT,
-                         username=USERNAME,
-                         password=PASSWORD)
+    reddit = praw.Reddit(client_id=environ["CLIENT_ID"],
+                         client_secret=environ["CLIENT_SECRET"],
+                         user_agent=environ["USER_AGENT"],
+                         username=environ["USERNAME"],
+                         password=environ["PASSWORD"])
     return reddit
 
 
@@ -176,7 +177,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 if __name__ == "__main__":
 
     subreddit_name = 'disneyvacation'
-    filepath = FILEPATH_TO_LOGFILE
+    filepath = environ["FILEPATH_TO_LOGFILE"]
     post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
 
 Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
