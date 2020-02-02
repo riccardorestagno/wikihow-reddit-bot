@@ -1,8 +1,6 @@
+.git/
 .idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+__pycache__/
 
+WikiHowBotLog.txt
 credentials.py
