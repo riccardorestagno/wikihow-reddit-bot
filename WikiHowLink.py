@@ -190,6 +190,8 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
+        # if minutes_posted(post) > 2 * 60 * 24:
+        #     break
         if minutes_posted(post) > 12:
             break
 
