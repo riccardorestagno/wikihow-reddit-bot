@@ -1,6 +1,9 @@
 import urllib.parse
 import praw
+<<<<<<< HEAD:app/WikiHowLink.py
 #import kdapi.kdapi as kd
+=======
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
 import time
 import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
@@ -8,6 +11,45 @@ from credentials import *
 from os import environ
 
 
+<<<<<<< HEAD:app/WikiHowLink.py
+# def repost_check(link, title, subreddit):
+#     """Returns true if a repost occured"""
+
+#     reddit = connect_to_reddit()
+
+    # for repost in kd.check(link, subreddit):
+    #     submission = reddit.submission(url=repost.link)
+
+    #     # Repost
+    #     if repost.similarity is not None and repost.similarity > 95:
+
+    #         # Image Repost
+    #         if minutes_posted(submission) < 60 * 24 and submission.score > 500:
+    #             submission.reply('Hey /u/' + submission.author.name + ". The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since"
+    #                              + " the wikihow image provided is an image repost of the following post: " + repost.link
+    #                              + "\nPlease refrain from using Wikihow images that were used within the past 24 hours on this sub."
+    #                              + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
+    #             time.sleep(3)  # Prevents PRAW from detecting spam
+    #             submission.mod.remove()  # Deletes the post
+    #             return True
+
+    #         # Blatant Repost
+    #         same_words = set.intersection(set(repost.title.lower().split()), set(title.lower().split()))
+    #         if submission.score > 5000 and same_words >= 6:
+    #             submission.reply(
+    #                 'Hey /u/' + submission.author.name + ". The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since"
+    #                 + " the wikihow image provided is a blatant of the following post: " + repost.link
+    #                 + "\nPlease refrain from using Wikihow images that were used within the past 24 hours on this sub."
+    #                 + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
+    #             time.sleep(3)  # Prevents PRAW from detecting spam
+    #             submission.mod.remove()  # Deletes the post
+    #             return True
+
+    # return False
+
+
+=======
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
 def minutes_posted(submission):
     """Gets the time that passed (in minutes) from when the post was made. (All time is converted to UTC)"""
     time_created = submission.created_utc
@@ -155,9 +197,13 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
+<<<<<<< HEAD:app/WikiHowLink.py
         # if minutes_posted(post) > 2 * 60 * 24:
         #     break
         if minutes_posted(post) > 12:
+=======
+        if minutes_posted(post) > 60 *24:
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
             break
 
         # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
