@@ -104,14 +104,16 @@ If true, post is skipped. If false, comment is made on post, then another defini
     submission = reddit.submission(url='https://www.reddit.com' + link)
     wikihowlink = False
 
-    # Skips if post was made by a mod
-    if submission.author.name in disneyvacation_mods:
+    # Skips if post was made by a mod or if post author was deleted
+    if not submission.author or submission.author.name in disneyvacation_mods:
         return
 
     if not wikihowlink:
         submission.comments.replace_more(limit=0)
         # searches through top-level comments and checks if there is a wikihow link in them
         for top_level_comment in submission.comments:
+            if not top_level_comment.author:
+                continue
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
@@ -119,6 +121,8 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
                 wikihowlink = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
+                    if not comment.author:
+                        continue
                     if comment.author.name == 'WikiHowLinkBot':
                         return
 
