@@ -48,7 +48,7 @@ def minutes_posted(submission):
     time_created = submission.created_utc
     current_time = datetime.utcnow()
     time_posted = datetime.utcfromtimestamp(time_created)
-    time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
+    time_difference_in_minutes = (current_time - time_posted) / timedelta(minutes=1)
     return time_difference_in_minutes
 
 
@@ -113,15 +113,17 @@ def source_added_check(filepath):
 
             if 'm.wikihow' in message_provided:  # If mobile link is given, convert mobile to desktop link
                 message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
-                with open(filepath, 'a') as outputfile:
-                        outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+                with open(filepath, 'a', errors="ignore") as outputfile:
+                    outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
             elif '](' in message_provided and message_provided.lower().count(".wikihow") == 1:
                 message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
             else:
-                message.submission.reply('User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
+                message.submission.reply(
+                    'User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0])\
+                    .mod.distinguish(how='yes')  # replies to post with wikihow source link provided
 
             message.submission.mod.approve()  # Approves the post
-            with open(filepath, 'a') as outputfile:
+            with open(filepath, 'a', errors="ignore") as outputfile:
                 outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 
         unread_messages.append(message)
@@ -135,7 +137,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
     reddit = connect_to_reddit()
 
-    submission = reddit.submission(url = 'https://www.reddit.com' + link)
+    submission = reddit.submission(url='https://www.reddit.com' + link)
     wikihowlink = False
 
     # Skips if post was made by a mod
@@ -149,7 +151,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
-            or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
+                    or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
 
                 wikihowlink = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
@@ -165,12 +167,12 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
     if not wikihowlink:
         submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)  # replies to post and stickies the reply + distinguish
-        with open(filepath, 'a') as outputfile:
+        with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
         submission.mod.remove()  # deletes the post
     else:
-        with open(filepath, 'a') as outputfile:
+        with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
 
 def mainfunction():
