@@ -1,6 +1,5 @@
 import urllib.parse
 import praw
-#import kdapi.kdapi as kd
 import time
 import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
@@ -123,15 +122,17 @@ If true, post is skipped. If false, comment is made on post, then another defini
                     if comment.author.name == 'WikiHowLinkBot':
                         return
 
+                # replies with desktop link
                 if 'm.wikihow' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
-                    top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))  # replies with desktop link
+                    top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))
 
                 elif '](' in comment_to_check and comment_to_check.lower().count(".wikihow") == 1:
                     top_level_comment.reply(plaintext_link_maker(comment_to_check))
                 break
 
+    # replies to post and stickies the reply + distinguish
     if not wikihowlink:
-        submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)  # replies to post and stickies the reply + distinguish
+        submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
@@ -139,6 +140,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
     else:
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
+
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
@@ -155,14 +157,9 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
-        # if minutes_posted(post) > 2 * 60 * 24:
-        #     break
         if minutes_posted(post) > 12:
             break
 
-        # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
-        # if not rp.repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
-        #   comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
     source_added_check(filepath)  # Checks bots inbox for comment replies with wikihow link
@@ -170,9 +167,8 @@ Please reply to THIS COMMENT with the source article and your post will be appro
 
 if __name__ == "__main__":
 
-    while True:
+    while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
         mainfunction()
-        time.sleep(300) # Wait for five minutes before running again
+        time.sleep(300)  # Wait for five minutes before running again
         print("Sweep finished @ " + str(datetime.now()))
-    
