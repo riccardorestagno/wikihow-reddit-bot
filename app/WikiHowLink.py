@@ -1,12 +1,17 @@
 import urllib.parse
 import praw
+<<<<<<< HEAD:app/WikiHowLink.py
 #import kdapi.kdapi as kd
+=======
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
 import time
+import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
 from credentials import *
 from os import environ
 
 
+<<<<<<< HEAD:app/WikiHowLink.py
 # def repost_check(link, title, subreddit):
 #     """Returns true if a repost occured"""
 
@@ -43,6 +48,8 @@ from os import environ
     # return False
 
 
+=======
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
 def minutes_posted(submission):
     """Gets the time that passed (in minutes) from when the post was made. (All time is converted to UTC)"""
     time_created = submission.created_utc
@@ -190,13 +197,17 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
+<<<<<<< HEAD:app/WikiHowLink.py
         # if minutes_posted(post) > 2 * 60 * 24:
         #     break
         if minutes_posted(post) > 12:
+=======
+        if minutes_posted(post) > 60 *24:
+>>>>>>> f3b03a3... Added the unused repost method to a separate function:WikiHowLink.py
             break
 
         # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
-        # if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
+        # if not rp.repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
         #   comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
