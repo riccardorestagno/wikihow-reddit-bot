@@ -173,9 +173,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
         with open(filepath, 'a') as outputfile:
             outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
 
-
-if __name__ == "__main__":
-
+def mainfunction():
     subreddit_name = 'disneyvacation'
     filepath = environ["FILEPATH_TO_LOGFILE"]
     post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
@@ -201,3 +199,13 @@ Please reply to THIS COMMENT with the source article and your post will be appro
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
     source_added_check(filepath)  # Checks bots inbox for comment replies with wikihow link
+
+
+if __name__ == "__main__":
+
+    while True:
+        print("WikiHowLinkBot is starting @ " + str(datetime.now()))
+        mainfunction()
+        time.sleep(300) # Wait for five minutes before running again
+        print("Sweep finished @ " + str(datetime.now()))
+    
