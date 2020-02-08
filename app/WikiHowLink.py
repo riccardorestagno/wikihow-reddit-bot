@@ -1,9 +1,46 @@
 import urllib.parse
 import praw
+#import kdapi.kdapi as kd
 import time
-import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
 from credentials import *
+from os import environ
+
+
+# def repost_check(link, title, subreddit):
+#     """Returns true if a repost occured"""
+
+#     reddit = connect_to_reddit()
+
+    # for repost in kd.check(link, subreddit):
+    #     submission = reddit.submission(url=repost.link)
+
+    #     # Repost
+    #     if repost.similarity is not None and repost.similarity > 95:
+
+    #         # Image Repost
+    #         if minutes_posted(submission) < 60 * 24 and submission.score > 500:
+    #             submission.reply('Hey /u/' + submission.author.name + ". The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since"
+    #                              + " the wikihow image provided is an image repost of the following post: " + repost.link
+    #                              + "\nPlease refrain from using Wikihow images that were used within the past 24 hours on this sub."
+    #                              + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
+    #             time.sleep(3)  # Prevents PRAW from detecting spam
+    #             submission.mod.remove()  # Deletes the post
+    #             return True
+
+    #         # Blatant Repost
+    #         same_words = set.intersection(set(repost.title.lower().split()), set(title.lower().split()))
+    #         if submission.score > 5000 and same_words >= 6:
+    #             submission.reply(
+    #                 'Hey /u/' + submission.author.name + ". The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since"
+    #                 + " the wikihow image provided is a blatant of the following post: " + repost.link
+    #                 + "\nPlease refrain from using Wikihow images that were used within the past 24 hours on this sub."
+    #                 + "\nNOTE: This feature is currently in BETA so if you believe this post was removed incorrectly, please contact us through modmail.").mod.distinguish(how='yes', sticky=True)
+    #             time.sleep(3)  # Prevents PRAW from detecting spam
+    #             submission.mod.remove()  # Deletes the post
+    #             return True
+
+    # return False
 
 
 def minutes_posted(submission):
@@ -11,18 +48,18 @@ def minutes_posted(submission):
     time_created = submission.created_utc
     current_time = datetime.utcnow()
     time_posted = datetime.utcfromtimestamp(time_created)
-    time_difference_in_minutes = (current_time - time_posted) / timedelta(minutes=1)
+    time_difference_in_minutes = (current_time - time_posted)/timedelta(minutes=1)
     return time_difference_in_minutes
 
 
 def connect_to_reddit():
     """ Connects the bot to the Reddit client"""
 
-    reddit = praw.Reddit(client_id=CLIENT_ID,
-                         client_secret=CLIENT_SECRET,
-                         user_agent=USER_AGENT,
-                         username=USERNAME,
-                         password=PASSWORD)
+    reddit = praw.Reddit(client_id=environ["CLIENT_ID"],
+                         client_secret=environ["CLIENT_SECRET"],
+                         user_agent=environ["USER_AGENT"],
+                         username=environ["USERNAME"],
+                         password=environ["PASSWORD"])
     return reddit
 
 
@@ -76,17 +113,15 @@ def source_added_check(filepath):
 
             if 'm.wikihow' in message_provided:  # If mobile link is given, convert mobile to desktop link
                 message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
-                with open(filepath, 'a', errors="ignore") as outputfile:
-                    outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+                with open(filepath, 'a') as outputfile:
+                        outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
             elif '](' in message_provided and message_provided.lower().count(".wikihow") == 1:
                 message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
             else:
-                message.submission.reply(
-                    'User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0])\
-                    .mod.distinguish(how='yes')  # replies to post with wikihow source link provided
+                message.submission.reply('User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0]).mod.distinguish(how='yes') #replies to post with wikihow source link provided
 
             message.submission.mod.approve()  # Approves the post
-            with open(filepath, 'a', errors="ignore") as outputfile:
+            with open(filepath, 'a') as outputfile:
                 outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 
         unread_messages.append(message)
@@ -100,7 +135,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
     reddit = connect_to_reddit()
 
-    submission = reddit.submission(url='https://www.reddit.com' + link)
+    submission = reddit.submission(url = 'https://www.reddit.com' + link)
     wikihowlink = False
 
     # Skips if post was made by a mod
@@ -114,7 +149,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
-                    or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
+            or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
 
                 wikihowlink = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
@@ -130,17 +165,17 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
     if not wikihowlink:
         submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)  # replies to post and stickies the reply + distinguish
-        with open(filepath, 'a', errors="ignore") as outputfile:
+        with open(filepath, 'a') as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
         submission.mod.remove()  # deletes the post
     else:
-        with open(filepath, 'a', errors="ignore") as outputfile:
+        with open(filepath, 'a') as outputfile:
             outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
-    filepath = FILEPATH_TO_LOGFILE
+    filepath = environ["FILEPATH_TO_LOGFILE"]
     post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
 
 Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
@@ -153,14 +188,13 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     for post in posts:
         if minutes_posted(post) < 5:
             continue
-
         # if minutes_posted(post) > 2 * 60 * 24:
         #     break
         if minutes_posted(post) > 12:
             break
 
         # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
-        # if not rp.repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
+        # if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
         #   comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 

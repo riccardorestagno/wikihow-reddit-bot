@@ -1,11 +1,14 @@
-.git/
 .idea/
-__pycache__/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-WikiHowBotLog.txt
 credentials.py
 docker-compose.yml
 docker-compose.debug.yml
+WikiHowBotLog.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
