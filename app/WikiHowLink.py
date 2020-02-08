@@ -2,7 +2,6 @@ import urllib.parse
 import praw
 #import kdapi.kdapi as kd
 import time
-import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
 from credentials import *
 from os import environ
@@ -195,7 +194,7 @@ Please reply to THIS COMMENT with the source article and your post will be appro
             break
 
         # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
-        # if not rp.repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
+        # if not repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
         #   comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
