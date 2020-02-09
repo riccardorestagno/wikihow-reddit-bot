@@ -1,9 +1,8 @@
 import urllib.parse
 import praw
 import time
-import RepostCheck as rp  # Unused
+# import old.repost_check as rp  # Unused
 from datetime import datetime, timedelta
-from credentials import *
 from os import environ
 from dotenv import load_dotenv
 load_dotenv()
@@ -151,9 +150,10 @@ If true, post is skipped. If false, comment is made on post, then another defini
 def mainfunction():
     subreddit_name = 'disneyvacation'
     filepath = environ["WIKIHOWLINKBOT_FILEPATH_TO_LOGFILE"]
-    post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
-
-Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
+    post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
+                              "automatically removed since the link to the Wikihow source article was not provided. " \
+                              "\n\nPlease reply to THIS COMMENT with the source article and your post " \
+                              "will be approved within at most 10 minutes."
 
     reddit = connect_to_reddit()
 
@@ -176,5 +176,5 @@ if __name__ == "__main__":
     while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
         mainfunction()
-        time.sleep(300)  # Wait for five minutes before running again
         print("Sweep finished @ " + str(datetime.now()))
+        time.sleep(300)  # Wait for five minutes before running again
