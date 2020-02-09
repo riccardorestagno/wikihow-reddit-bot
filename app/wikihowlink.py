@@ -5,6 +5,8 @@ import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
 from credentials import *
 from os import environ
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def minutes_posted(submission):
@@ -19,11 +21,11 @@ def minutes_posted(submission):
 def connect_to_reddit():
     """ Connects the bot to the Reddit client"""
 
-    reddit = praw.Reddit(client_id=environ["CLIENT_ID"],
-                         client_secret=environ["CLIENT_SECRET"],
-                         user_agent=environ["USER_AGENT"],
-                         username=environ["USERNAME"],
-                         password=environ["PASSWORD"])
+    reddit = praw.Reddit(client_id=environ["WIKIHOWLINKBOT_CLIENT_ID"],
+                         client_secret=environ["WIKIHOWLINKBOT_CLIENT_SECRET"],
+                         user_agent=environ["WIKIHOWLINKBOT_USER_AGENT"],
+                         username=environ["WIKIHOWLINKBOT_USERNAME"],
+                         password=environ["WIKIHOWLINKBOT_PASSWORD"])
     return reddit
 
 
@@ -105,7 +107,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
     wikihowlink = False
 
     # Skips if post was made by a mod or if post author was deleted
-    if not submission.author or submission.author.name in disneyvacation_mods:
+    if not submission.author or submission.author.name in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(','):
         return
 
     if not wikihowlink:
@@ -117,7 +119,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
-                    or any(mods == top_level_comment.author.name for mods in disneyvacation_mods):
+                    or any(mods == top_level_comment.author.name for mods in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(',')):
 
                 wikihowlink = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
@@ -148,7 +150,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
-    filepath = environ["FILEPATH_TO_LOGFILE"]
+    filepath = environ["WIKIHOWLINKBOT_FILEPATH_TO_LOGFILE"]
     post_link_reminder_text = """. The mod team at /r/disneyvacation thanks you for your submission, however it has been automatically removed since the link to the Wikihow source article was not provided.
 
 Please reply to THIS COMMENT with the source article and your post will be approved within at most 10 minutes."""
