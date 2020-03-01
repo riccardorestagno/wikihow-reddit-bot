@@ -1,5 +1,5 @@
 import os
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 import smtplib
 from email import encoders
 from email.mime.base import MIMEBase
@@ -47,7 +47,8 @@ def clear_textfile(filepath):
 			i+=1
 			if i == 4:
 				break
-			
+
+
 if __name__ == '__main__':
 	filepath = r"C:\Users\....\WikiHowBotLog.txt"
 	
