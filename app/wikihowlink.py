@@ -4,8 +4,6 @@ import time
 # import old.repost_check as rp  # Unused
 from datetime import datetime, timedelta
 from os import environ
-from dotenv import load_dotenv
-load_dotenv()
 
 
 def minutes_posted(submission):
