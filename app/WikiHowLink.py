@@ -2,7 +2,7 @@ import urllib.parse
 import praw
 #import kdapi.kdapi as kd
 import time
-import RepostCheck as rp  # Unused
+#import RepostCheck as rp  # Unused
 from datetime import datetime, timedelta
 from credentials import *
 from os import environ
@@ -153,12 +153,13 @@ Please reply to THIS COMMENT with the source article and your post will be appro
     posts = subreddit.new(limit=50)
 
     for post in posts:
+        #print("Now inspecting " + post.title)
         if minutes_posted(post) < 5:
             continue
-        # if minutes_posted(post) > 2 * 60 * 24:
-        #     break
-        if minutes_posted(post) > 12:
+        if minutes_posted(post) > 2 * 60 * 24:
             break
+        # if minutes_posted(post) > 12:
+        #     break
 
         # If its not a repost, then check for source (NOT USED DUE TO API DEPENDENCY ISSUES)
         # if not rp.repost_check(post.url, post.title, subreddit_name):  # Checks for reposts (BETA)
@@ -173,6 +174,7 @@ if __name__ == "__main__":
     while True:
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
         mainfunction()
-        time.sleep(300) # Wait for five minutes before running again
         print("Sweep finished @ " + str(datetime.now()))
+        time.sleep(300) # Wait for five minutes before running again
+        
     
