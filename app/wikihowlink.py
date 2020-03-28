@@ -1,13 +1,12 @@
-import urllib.parse
 import praw
 import time
-# import old.repost_check as rp  # Unused
+import urllib.parse
 from datetime import datetime, timedelta
 from os import environ
 
 
 def minutes_posted(submission):
-    """Gets the time that passed (in minutes) from when the post was made. (All time is converted to UTC)"""
+    """Gets the time that passed (in minutes) from when the post was made. (All time is converted to UTC)."""
     time_created = submission.created_utc
     current_time = datetime.utcnow()
     time_posted = datetime.utcfromtimestamp(time_created)
@@ -16,7 +15,7 @@ def minutes_posted(submission):
 
 
 def connect_to_reddit():
-    """ Connects the bot to the Reddit client"""
+    """Connects the bot to the Reddit client."""
 
     reddit = praw.Reddit(client_id=environ["WIKIHOWLINKBOT_CLIENT_ID"],
                          client_secret=environ["WIKIHOWLINKBOT_CLIENT_SECRET"],
@@ -27,7 +26,7 @@ def connect_to_reddit():
 
 
 def mobile_to_desktop_link(mobile_link, post_reapproval):
-    """ Converts moble link to desktop link"""
+    """Converts moble link to desktop link."""
     desktop_link = mobile_link
     if '[' in desktop_link:  # removes end bracket in hyperlink if user added any as well as any following text
         desktop_link = desktop_link.rsplit(')', 1)[0]
@@ -42,7 +41,7 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 
 
 def plaintext_link_maker(comment, post_reapproval=False):
-    """Converts wikihow hyperlink comment to plain text"""
+    """Converts Wikihow hyperlink comment to plain text."""
     link_to_reply = comment.split('](', 1)[1]
     link_to_reply = link_to_reply.rsplit(')', 1)[0]
 
@@ -53,7 +52,7 @@ def plaintext_link_maker(comment, post_reapproval=False):
 
 
 def source_added_check(filepath):
-    """ Checks if source was added by searching thorough all unread inbox replies for a wikihow link
+    """Checks if source was added by searching thorough all unread inbox replies for a wikihow link.
     If Wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
     POTENTIAL GLITCH: If the user replies a wikihow link to a non-removal comment, both comments can be deleted and an incorrect source can be added."""
 
@@ -96,25 +95,25 @@ def source_added_check(filepath):
 
 def comment_on_post(link, title, reminder, filepath):
     """If post was made longer than 5 minutes ago, module checks if wikihow link is a top-level comment
-If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post"""
+If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post."""
 
     reddit = connect_to_reddit()
 
     submission = reddit.submission(url='https://www.reddit.com' + link)
     wikihowlink = False
 
-    # Skips if post was made by a mod or if post author was deleted
+    # Skips if post was made by a mod or if post author was deleted.
     if not submission.author or submission.author.name in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(','):
         return
 
     if not wikihowlink:
         submission.comments.replace_more(limit=0)
-        # searches through top-level comments and checks if there is a wikihow link in them
+        # Searches through top-level comments and checks if there is a wikihow link in them.
         for top_level_comment in submission.comments:
             if not top_level_comment.author:
                 continue
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
-            # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post
+            # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post.
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
                     or any(mods == top_level_comment.author.name for mods in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(',')):
 
@@ -125,7 +124,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
                     if comment.author.name == 'WikiHowLinkBot':
                         return
 
-                # replies with desktop link
+                # Replies with desktop link.
                 if 'm.wikihow' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
                     top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))
 
@@ -133,13 +132,13 @@ If true, post is skipped. If false, comment is made on post, then another defini
                     top_level_comment.reply(plaintext_link_maker(comment_to_check))
                 break
 
-    # replies to post and stickies the reply + distinguish
+    # Replies to post and stickies the reply + distinguish.
     if not wikihowlink:
         submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
-        submission.mod.remove()  # deletes the post
+        submission.mod.remove()  # Deletes the post
     else:
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
@@ -159,13 +158,10 @@ def mainfunction():
     posts = subreddit.new(limit=50)
 
     for post in posts:
-        #print("Now inspecting " + post.title)
         if minutes_posted(post) < 5:
             continue
         if minutes_posted(post) > 12:
             break
-        # if minutes_posted(post) > 12:
-        #     break
 
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 

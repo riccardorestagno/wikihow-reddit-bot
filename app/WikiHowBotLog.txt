@@ -1,3 +1,0 @@
-Post FAILED - Post did not include wikihow link in comments. The bot successfully replied to the post and distinguished and stickied it's comment and the post has been deleted
-Post PASSED - Post included wikihow link in comments or had a meta tag
-Post RE-APPROVED - Post that was previously deleted received a comment containing the wikihow link and the bot re-approved the post

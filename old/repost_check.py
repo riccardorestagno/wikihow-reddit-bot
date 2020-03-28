@@ -1,6 +1,6 @@
-# import time
 # import kdapi.kdapi as kd
-# import WikiHowLink as wk
+# import time
+# import wikihowlink as wk
 #
 # def repost_check(link, title, subreddit):
 #     """Returns true if a repost occured"""
