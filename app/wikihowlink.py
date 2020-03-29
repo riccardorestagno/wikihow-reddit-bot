@@ -6,7 +6,8 @@ from os import environ
 
 
 def minutes_posted(submission):
-    """Gets the time that passed (in minutes) from when the post was made. (All time is converted to UTC)."""
+    """Gets the time that passed (in minutes) from when the post was made. All time is converted to UTC."""
+
     time_created = submission.created_utc
     current_time = datetime.utcnow()
     time_posted = datetime.utcfromtimestamp(time_created)
@@ -27,6 +28,7 @@ def connect_to_reddit():
 
 def mobile_to_desktop_link(mobile_link, post_reapproval):
     """Converts mobile link to desktop link."""
+
     desktop_link = mobile_link
     if '[' in desktop_link:  # removes end bracket in hyperlink if user added any as well as any following text
         desktop_link = desktop_link.rsplit(')', 1)[0]
@@ -42,6 +44,7 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 
 def plaintext_link_maker(comment, post_reapproval=False):
     """Converts wikiHow hyperlink comment to plain text."""
+
     link_to_reply = comment.split('](', 1)[1]
     link_to_reply = link_to_reply.rsplit(')', 1)[0]
 
@@ -52,9 +55,11 @@ def plaintext_link_maker(comment, post_reapproval=False):
 
 
 def source_added_check(filepath):
-    """Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
+    """
+    Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
     If the wikiHow link was provided, remove parent comment and user comment, and approve the post while adding the
-    users provided comment as a top-level comment to the post."""
+    users provided comment as a top-level comment to the post.
+    """
 
     reddit = connect_to_reddit()
 
@@ -94,8 +99,10 @@ def source_added_check(filepath):
 
 
 def comment_on_post(link, title, reminder, filepath):
-    """If post was made longer than 5 minutes ago, module checks if wikiHow link is a top-level comment
-    If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post."""
+    """
+    If post was made longer than 5 minutes ago, module checks if wikiHow link is a top-level comment
+    If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post.
+    """
 
     reddit = connect_to_reddit()
 
