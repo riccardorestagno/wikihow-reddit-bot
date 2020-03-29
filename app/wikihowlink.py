@@ -26,7 +26,7 @@ def connect_to_reddit():
 
 
 def mobile_to_desktop_link(mobile_link, post_reapproval):
-    """Converts moble link to desktop link."""
+    """Converts mobile link to desktop link."""
     desktop_link = mobile_link
     if '[' in desktop_link:  # removes end bracket in hyperlink if user added any as well as any following text
         desktop_link = desktop_link.rsplit(')', 1)[0]
@@ -41,7 +41,7 @@ def mobile_to_desktop_link(mobile_link, post_reapproval):
 
 
 def plaintext_link_maker(comment, post_reapproval=False):
-    """Converts Wikihow hyperlink comment to plain text."""
+    """Converts wikiHow hyperlink comment to plain text."""
     link_to_reply = comment.split('](', 1)[1]
     link_to_reply = link_to_reply.rsplit(')', 1)[0]
 
@@ -52,9 +52,9 @@ def plaintext_link_maker(comment, post_reapproval=False):
 
 
 def source_added_check(filepath):
-    """Checks if source was added by searching thorough all unread inbox replies for a wikihow link.
-    If Wikihow link was provided, remove parent comment and user comment, and approve the post while adding the users comment as a top-level comment to the post
-    POTENTIAL GLITCH: If the user replies a wikihow link to a non-removal comment, both comments can be deleted and an incorrect source can be added."""
+    """Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
+    If the wikiHow link was provided, remove parent comment and user comment, and approve the post while adding the
+    users provided comment as a top-level comment to the post."""
 
     reddit = connect_to_reddit()
 
@@ -82,7 +82,7 @@ def source_added_check(filepath):
             else:
                 message.submission.reply(
                     'User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0])\
-                    .mod.distinguish(how='yes')  # replies to post with wikihow source link provided
+                    .mod.distinguish(how='yes')  # Replies to post with wikiHow source link provided
 
             message.submission.mod.approve()  # Approves the post
             with open(filepath, 'a', errors="ignore") as outputfile:
@@ -94,30 +94,30 @@ def source_added_check(filepath):
 
 
 def comment_on_post(link, title, reminder, filepath):
-    """If post was made longer than 5 minutes ago, module checks if wikihow link is a top-level comment
-If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post."""
+    """If post was made longer than 5 minutes ago, module checks if wikiHow link is a top-level comment
+    If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post."""
 
     reddit = connect_to_reddit()
 
     submission = reddit.submission(url='https://www.reddit.com' + link)
-    wikihowlink = False
+    wikihow_link = False
 
     # Skips if post was made by a mod or if post author was deleted.
     if not submission.author or submission.author.name in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(','):
         return
 
-    if not wikihowlink:
+    if not wikihow_link:
         submission.comments.replace_more(limit=0)
-        # Searches through top-level comments and checks if there is a wikihow link in them.
+        # Searches through top-level comments and checks if there is a wikiHow link in them.
         for top_level_comment in submission.comments:
             if not top_level_comment.author:
                 continue
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
-            # Checks if any wikihow domains are linked in the comments by the author or if mods already replied to post.
+            # Checks if any wikiHow domains are linked in the comments by the author or if mods already replied to post.
             if (top_level_comment.author.name == submission.author.name and ".wikihow" in comment_to_check.lower()) \
                     or any(mods == top_level_comment.author.name for mods in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(',')):
 
-                wikihowlink = True
+                wikihow_link = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
                     if not comment.author:
                         continue
@@ -133,7 +133,7 @@ If true, post is skipped. If false, comment is made on post, then another defini
                 break
 
     # Replies to post and stickies the reply + distinguish.
-    if not wikihowlink:
+    if not wikihow_link:
         submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
@@ -141,14 +141,14 @@ If true, post is skipped. If false, comment is made on post, then another defini
         submission.mod.remove()  # Deletes the post
     else:
         with open(filepath, 'a', errors="ignore") as outputfile:
-            outputfile.writelines("Post PASSED - " + title + " (WikiHow link)" + "\n")
+            outputfile.writelines("Post PASSED - " + title + " (wikiHow link)" + "\n")
 
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
     filepath = environ["WIKIHOWLINKBOT_FILEPATH_TO_LOGFILE"]
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
-                              "automatically removed since the link to the Wikihow source article was not provided. " \
+                              "automatically removed since the link to the wikiHow source article was not provided. " \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
                               "will be approved within at most 10 minutes."
 
@@ -165,7 +165,7 @@ def mainfunction():
 
         comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
 
-    source_added_check(filepath)  # Checks bots inbox for comment replies with wikihow link
+    source_added_check(filepath)  # Checks bots inbox for comment replies with wikiHow link
 
 
 if __name__ == "__main__":

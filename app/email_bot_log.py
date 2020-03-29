@@ -5,6 +5,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 
+
 def send_email(sender, recipients, attachment):
 
 	email_server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -18,8 +19,9 @@ def send_email(sender, recipients, attachment):
 
 	email_server.quit()
 
+
 def attachment(sender, recipients, date):
-	""" Creates attachment using MIMEMultipart (see: https://gist.github.com/rdempsey/22afd43f8d777b78ef22)"""
+	"""Creates attachment using MIMEMultipart (see: https://gist.github.com/rdempsey/22afd43f8d777b78ef22)."""
 	msg = MIMEMultipart()
 	msg['Subject'] = "WikiHowLink Bot Log for Week of " + date
 	msg['From'] = sender
@@ -33,18 +35,20 @@ def attachment(sender, recipients, date):
 
 	msg.attach(part)
 	composed = msg.as_string()
-	
+
 	return composed
+
+
 def clear_textfile(filepath):
-	i=0
-	file = open(filepath,"r")
+	i = 0
+	file = open(filepath, "r")
 	lines = file.readlines()
 	file.close()
 
-	with open(filepath, 'w') as clearfile:
+	with open(filepath, 'w') as file:
 		for line in lines:
-			clearfile.write(line)
-			i+=1
+			file.write(line)
+			i += 1
 			if i == 4:
 				break
 
