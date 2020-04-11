@@ -177,7 +177,7 @@ def mainfunction():
 
 if __name__ == "__main__":
 
-    while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method
+    while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method.
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
         mainfunction()
         print("Sweep finished @ " + str(datetime.now()))
