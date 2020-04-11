@@ -141,7 +141,7 @@ def comment_on_post(link, title, reminder, filepath):
 
     # Replies to post and stickies the reply + distinguish.
     if not wikihow_link:
-        submission.reply('Hey /u/' + submission.author.name + reminder).mod.distinguish(how='yes', sticky=True)
+        submission.reply(f"Hey /u/{submission.author.name} {reminder}").mod.distinguish(how='yes', sticky=True)
         with open(filepath, 'a', errors="ignore") as outputfile:
             outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
