@@ -6,6 +6,7 @@
 !.vscode/extensions.json
 
 docker-compose.debug.yml
+docker-compose-rebuild-wolf.yml
 app/wikihow_bot_log.txt
 
 # Byte-compiled / optimized / DLL files
