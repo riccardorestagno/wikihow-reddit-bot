@@ -153,7 +153,7 @@ def comment_on_post(link, title, reminder, filepath):
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
-    filepath = environ["WIKIHOWLINKBOT_FILEPATH_TO_LOGFILE"]
+    filepath = "/logs/WikiHowBot.log"
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
                               "automatically removed since the link to the wikiHow source article was not provided. " \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
