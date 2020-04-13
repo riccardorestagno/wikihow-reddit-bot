@@ -1,0 +1,7 @@
+version: '2.1'
+
+services:
+  wikihow_reddit_bot:
+    image: rslashdisneyvacation/moderationbot
+    restart: unless-stopped
+    env_file: .env

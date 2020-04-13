@@ -5,8 +5,6 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
-credentials.py
-docker-compose.yml
 docker-compose.debug.yml
 app/wikihow_bot_log.txt
 
