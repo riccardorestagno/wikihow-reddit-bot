@@ -2,7 +2,18 @@ import praw
 import time
 import urllib.parse
 from datetime import datetime, timedelta
-from os import environ
+from os import environ, getcwd, mkdir, path
+
+
+def create_log_file(filepath):
+    """Creates directory and file for logs if it doesn't exist yet."""
+
+    # Creates directory
+    mkdir(filepath.rsplit('/', 1)[0] + '/')
+
+    # Creating a file at specified location
+    with open(filepath, 'w'):
+        pass
 
 
 def minutes_posted(submission):
@@ -134,7 +145,6 @@ def comment_on_post(link, title, reminder, filepath):
                 # Replies with desktop link.
                 if 'm.wikihow' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
                     top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))
-
                 elif '](' in comment_to_check and comment_to_check.lower().count(".wikihow") == 1:
                     top_level_comment.reply(plaintext_link_maker(comment_to_check))
                 break
@@ -153,7 +163,7 @@ def comment_on_post(link, title, reminder, filepath):
 
 def mainfunction():
     subreddit_name = 'disneyvacation'
-    filepath = "/logs/WikiHowBot.log"
+    filepath = getcwd() + "/logs/WikiHowBot.log"
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
                               "automatically removed since the link to the wikiHow source article was not provided. " \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
@@ -163,6 +173,10 @@ def mainfunction():
 
     subreddit = reddit.subreddit(subreddit_name)
     posts = subreddit.new(limit=50)
+
+    # Creates log directory and file if it doesn't exist
+    if not path.isdir(filepath.rsplit('/', 1)[0] + '/'):
+        create_log_file(filepath)
 
     for post in posts:
         if minutes_posted(post) < 5:
