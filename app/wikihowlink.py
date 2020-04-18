@@ -5,14 +5,22 @@ from datetime import datetime, timedelta
 from os import environ, getcwd, mkdir, path
 
 
-def create_log_file(filepath):
+LOGS_FILEPATH = getcwd() + "/logs/WikiHowBot.log"
+
+
+def log_message(message):
+    with open(LOGS_FILEPATH, 'a', errors="ignore") as output_file:
+        output_file.writelines(message)
+
+
+def create_log_file():
     """Creates directory and file for logs if it doesn't exist yet."""
 
     # Creates directory
-    mkdir(filepath.rsplit('/', 1)[0] + '/')
+    mkdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
 
     # Creating a file at specified location
-    with open(filepath, 'w'):
+    with open(LOGS_FILEPATH, 'w'):
         pass
 
 
@@ -29,12 +37,11 @@ def minutes_posted(submission):
 def connect_to_reddit():
     """Connects the bot to the Reddit client."""
 
-    reddit = praw.Reddit(client_id=environ["WIKIHOWLINKBOT_CLIENT_ID"],
-                         client_secret=environ["WIKIHOWLINKBOT_CLIENT_SECRET"],
-                         user_agent=environ["WIKIHOWLINKBOT_USER_AGENT"],
-                         username=environ["WIKIHOWLINKBOT_USERNAME"],
-                         password=environ["WIKIHOWLINKBOT_PASSWORD"])
-    return reddit
+    return praw.Reddit(client_id=environ["WIKIHOWLINKBOT_CLIENT_ID"],
+                       client_secret=environ["WIKIHOWLINKBOT_CLIENT_SECRET"],
+                       user_agent=environ["WIKIHOWLINKBOT_USER_AGENT"],
+                       username=environ["WIKIHOWLINKBOT_USERNAME"],
+                       password=environ["WIKIHOWLINKBOT_PASSWORD"])
 
 
 def mobile_to_desktop_link(mobile_link, post_reapproval):
@@ -65,7 +72,7 @@ def plaintext_link_maker(comment, post_reapproval=False):
         return 'User-provided source: ' + link_to_reply
 
 
-def source_added_check(filepath):
+def source_added_check():
     """
     Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
     If the wikiHow link was provided, remove parent comment and user comment, and approve the post while adding the
@@ -91,8 +98,7 @@ def source_added_check(filepath):
 
             if 'm.wikihow' in message_provided:  # If mobile link is given, convert mobile to desktop link
                 message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
-                with open(filepath, 'a', errors="ignore") as outputfile:
-                    outputfile.writelines("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+                log_message("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
             elif '](' in message_provided and message_provided.lower().count(".wikihow") == 1:
                 message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
             else:
@@ -101,15 +107,14 @@ def source_added_check(filepath):
                     .mod.distinguish(how='yes')  # Replies to post with wikiHow source link provided
 
             message.submission.mod.approve()  # Approves the post
-            with open(filepath, 'a', errors="ignore") as outputfile:
-                outputfile.writelines("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+            log_message("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
 
         unread_messages.append(message)
 
     reddit.inbox.mark_read(unread_messages)
 
 
-def comment_on_post(link, title, reminder, filepath):
+def comment_on_post(link, title, reminder):
     """
     If post was made longer than 5 minutes ago, module checks if wikiHow link is a top-level comment
     If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post.
@@ -152,18 +157,15 @@ def comment_on_post(link, title, reminder, filepath):
     # Replies to post and stickies the reply + distinguish.
     if not wikihow_link:
         submission.reply(f"Hey /u/{submission.author.name} {reminder}").mod.distinguish(how='yes', sticky=True)
-        with open(filepath, 'a', errors="ignore") as outputfile:
-            outputfile.writelines("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
+        log_message("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
         submission.mod.remove()  # Deletes the post
     else:
-        with open(filepath, 'a', errors="ignore") as outputfile:
-            outputfile.writelines("Post PASSED - " + title + " (wikiHow link)" + "\n")
+        log_message("Post PASSED - " + title + " (wikiHow link)" + "\n")
 
 
-def mainfunction():
+def main():
     subreddit_name = 'disneyvacation'
-    filepath = getcwd() + "/logs/WikiHowBot.log"
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
                               "automatically removed since the link to the wikiHow source article was not provided. " \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
@@ -175,8 +177,8 @@ def mainfunction():
     posts = subreddit.new(limit=50)
 
     # Creates log directory and file if it doesn't exist
-    if not path.isdir(filepath.rsplit('/', 1)[0] + '/'):
-        create_log_file(filepath)
+    if not path.isdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/'):
+        create_log_file()
 
     for post in posts:
         if minutes_posted(post) < 5:
@@ -184,15 +186,15 @@ def mainfunction():
         if minutes_posted(post) > 12:
             break
 
-        comment_on_post(post.permalink, post.title, post_link_reminder_text, filepath)
+        comment_on_post(post.permalink, post.title, post_link_reminder_text)
 
-    source_added_check(filepath)  # Checks bots inbox for comment replies with wikiHow link
+    source_added_check()  # Checks bots inbox for comment replies with wikiHow link
 
 
 if __name__ == "__main__":
 
     while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method.
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
-        mainfunction()
+        main()
         print("Sweep finished @ " + str(datetime.now()))
         time.sleep(300)  # Wait for five minutes before running again
