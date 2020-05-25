@@ -4,6 +4,7 @@ import urllib.parse
 from datetime import datetime, timedelta
 from os import environ, getcwd, mkdir, path
 
+import link_modifier_methods as lmm
 
 LOGS_FILEPATH = getcwd() + "/logs/WikiHowBot.log"
 
@@ -44,34 +45,6 @@ def connect_to_reddit():
                        password=environ["WIKIHOWLINKBOT_PASSWORD"])
 
 
-def mobile_to_desktop_link(mobile_link, post_reapproval):
-    """Converts mobile link to desktop link."""
-
-    desktop_link = mobile_link
-    if '[' in desktop_link:  # removes end bracket in hyperlink if user added any as well as any following text
-        desktop_link = desktop_link.rsplit(')', 1)[0]
-    desktop_link = desktop_link.rsplit('m.wikihow', 1)[1]  # removes mobile hyperlinks
-    desktop_link = 'https://www.wikihow' + desktop_link.split('?', 1)[0]  # removes additional parameters
-    desktop_link = desktop_link.rsplit('amp=', 1)[0]  # removes 'amp' mobile tag
-
-    if post_reapproval:
-        return 'User-provided source: ' + desktop_link
-    else:
-        return 'Desktop Link: ' + desktop_link
-
-
-def plaintext_link_maker(comment, post_reapproval=False):
-    """Converts wikiHow hyperlink comment to plain text."""
-
-    link_to_reply = comment.split('](', 1)[1]
-    link_to_reply = link_to_reply.rsplit(')', 1)[0]
-
-    if not post_reapproval:
-        return 'Plain Text Link: ' + link_to_reply
-    else:
-        return 'User-provided source: ' + link_to_reply
-
-
 def source_added_check():
     """
     Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
@@ -96,15 +69,12 @@ def source_added_check():
                 reddit.inbox.mark_read([message])
                 continue
 
-            if 'm.wikihow' in message_provided:  # If mobile link is given, convert mobile to desktop link
-                message.submission.reply(mobile_to_desktop_link(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
-                log_message("Desktop link added - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
-            elif '](' in message_provided and message_provided.lower().count(".wikihow") == 1:
-                message.submission.reply(plaintext_link_maker(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
+            # Replies to post with wikiHow source link provided by OP.
+            link_to_reply = lmm.link_formatter(message_provided, post_reapproval=True)
+            if link_to_reply:
+                message.submission.top_level_comment.reply(link_to_reply)
             else:
-                message.submission.reply(
-                    'User-provided source: https://www.wikihow' + message_provided.split('.wikihow', 1)[1].split('](')[0])\
-                    .mod.distinguish(how='yes')  # Replies to post with wikiHow source link provided
+                message.submission.reply("User-provided source: " + message_provided).mod.distinguish(how='yes')
 
             message.submission.mod.approve()  # Approves the post
             log_message("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
@@ -147,16 +117,15 @@ def comment_on_post(link, title, reminder):
                     if comment.author.name == 'WikiHowLinkBot':
                         return
 
-                # Replies with desktop link.
-                if 'm.wikihow' in comment_to_check:  # If mobile link is given, convert mobile to desktop link
-                    top_level_comment.reply(mobile_to_desktop_link(comment_to_check, post_reapproval=False))
-                elif '](' in comment_to_check and comment_to_check.lower().count(".wikihow") == 1:
-                    top_level_comment.reply(plaintext_link_maker(comment_to_check))
+                # Replies with plain-text desktop link if comment containing link isn't formatted correctly.
+                link_to_reply = lmm.link_formatter(comment_to_check)
+                if link_to_reply:
+                    top_level_comment.reply(link_to_reply)
                 break
 
     # Replies to post and stickies the reply + distinguish.
     if not wikihow_link:
-        submission.reply(f"Hey /u/{submission.author.name} {reminder}").mod.distinguish(how='yes', sticky=True)
+        submission.reply(f"Hey /u/{submission.author.name}\n\n{reminder}").mod.distinguish(how='yes', sticky=True)
         log_message("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
         time.sleep(3)  # Prevents PRAW from detecting spam
         submission.mod.remove()  # Deletes the post
@@ -167,7 +136,7 @@ def comment_on_post(link, title, reminder):
 def main():
     subreddit_name = 'disneyvacation'
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
-                              "automatically removed since the link to the wikiHow source article was not provided. " \
+                              "automatically removed since the link to the wikiHow source article was not provided." \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
                               "will be approved within at most 10 minutes."
 
@@ -176,7 +145,7 @@ def main():
     subreddit = reddit.subreddit(subreddit_name)
     posts = subreddit.new(limit=50)
 
-    # Creates log directory and file if it doesn't exist
+    # Creates log directory and file if it doesn't exist.
     if not path.isdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/'):
         create_log_file()
 
@@ -188,13 +157,13 @@ def main():
 
         comment_on_post(post.permalink, post.title, post_link_reminder_text)
 
-    source_added_check()  # Checks bots inbox for comment replies with wikiHow link
+    source_added_check()  # Checks bots inbox for comment replies with wikiHow link.
 
 
 if __name__ == "__main__":
 
-    while True:  # Temporary functionality to run every three hours. Will adjust docker setup to avoid this method.
+    while True:
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
         main()
         print("Sweep finished @ " + str(datetime.now()))
-        time.sleep(300)  # Wait for five minutes before running again
+        time.sleep(5 * 60)  # Wait for 5 minutes before running again.

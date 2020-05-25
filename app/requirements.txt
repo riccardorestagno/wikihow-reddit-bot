@@ -1,2 +1,3 @@
+bs4
 praw
-python-dotenv
+requests
