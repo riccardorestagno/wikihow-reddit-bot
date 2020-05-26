@@ -72,7 +72,7 @@ def source_added_check():
             # Replies to post with wikiHow source link provided by OP.
             link_to_reply = lmm.link_formatter(message_provided, post_reapproval=True)
             if link_to_reply:
-                message.submission.top_level_comment.reply(link_to_reply)
+                message.submission.reply(link_to_reply).mod.distinguish(how='yes')
             else:
                 message.submission.reply("User-provided source: " + message_provided).mod.distinguish(how='yes')
 
