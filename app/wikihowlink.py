@@ -17,10 +17,10 @@ def log_message(message):
 def create_log_file():
     """Creates directory and file for logs if it doesn't exist yet."""
 
-    # Creates directory
+    # Creates directory.
     mkdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
 
-    # Creating a file at specified location
+    # Creates a file at specified location.
     with open(LOGS_FILEPATH, 'w'):
         pass
 
@@ -47,7 +47,7 @@ def connect_to_reddit():
 
 def source_added_check():
     """
-    Checks if source was added by searching thorough all unread inbox replies for a wikiHow link.
+    Checks if source was added by searching through all unread inbox replies for a wikiHow link.
     If the wikiHow link was provided, remove parent comment and user comment, and approve the post while adding the
     users provided comment as a top-level comment to the post.
     """
@@ -84,10 +84,12 @@ def source_added_check():
     reddit.inbox.mark_read(unread_messages)
 
 
-def comment_on_post(link, title, reminder):
+def moderate_post(link, title, reminder):
     """
-    If post was made longer than 5 minutes ago, module checks if wikiHow link is a top-level comment
-    If true, post is skipped. If false, comment is made on post, then another definition is called to sticky and delete post.
+    If post was made over 5 minutes ago, ensure a wikiHow link was posted as a top-level comment reply.
+    If the wikiHow link was provided in plain-text desktop format, post is skipped.
+    If the wikiHow link was provided in mobile, AMP or hyperlink format, bot replies to comment with the correctly formatted wikiHow link.
+    If the wikiHow link was not provided, post is deleted and the bot replies with a reminder to post the link to the source article.
     """
 
     reddit = connect_to_reddit()
@@ -111,7 +113,7 @@ def comment_on_post(link, title, reminder):
                     or any(mods == top_level_comment.author.name for mods in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(',')):
 
                 wikihow_link = True
-                for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link
+                for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link.
                     if not comment.author:
                         continue
                     if comment.author.name == 'WikiHowLinkBot':
@@ -127,18 +129,18 @@ def comment_on_post(link, title, reminder):
     if not wikihow_link:
         submission.reply(f"Hey /u/{submission.author.name}\n\n{reminder}").mod.distinguish(how='yes', sticky=True)
         log_message("Post FAILED - " + title + " (www.reddit.com" + link + ")\n")
-        time.sleep(3)  # Prevents PRAW from detecting spam
-        submission.mod.remove()  # Deletes the post
+        time.sleep(3)  # Prevents Reddit from detecting spam.
+        submission.mod.remove()  # Deletes the post.
     else:
         log_message("Post PASSED - " + title + " (wikiHow link)" + "\n")
 
 
-def main():
+def moderate_posts():
     subreddit_name = 'disneyvacation'
     post_link_reminder_text = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
                               "automatically removed since the link to the wikiHow source article was not provided." \
                               "\n\nPlease reply to THIS COMMENT with the source article and your post " \
-                              "will be approved within at most 10 minutes."
+                              "will be approved within at most 5 minutes."
 
     reddit = connect_to_reddit()
 
@@ -155,7 +157,7 @@ def main():
         if minutes_posted(post) > 12:
             break
 
-        comment_on_post(post.permalink, post.title, post_link_reminder_text)
+        moderate_post(post.permalink, post.title, post_link_reminder_text)
 
     source_added_check()  # Checks bots inbox for comment replies with wikiHow link.
 
@@ -164,6 +166,6 @@ if __name__ == "__main__":
 
     while True:
         print("WikiHowLinkBot is starting @ " + str(datetime.now()))
-        main()
+        moderate_posts()
         print("Sweep finished @ " + str(datetime.now()))
         time.sleep(5 * 60)  # Wait for 5 minutes before running again.
