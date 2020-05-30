@@ -1,13 +1,9 @@
 .idea/
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 
 docker-compose.debug.yml
 docker-compose-rebuild-wolf.yml
-app/wikihow_bot_log.txt
+wikihowbot/logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

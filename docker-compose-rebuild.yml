@@ -7,4 +7,4 @@ services:
     env_file: .env
     build: .
     volumes:
-    - /opt/wolfware/mounts/moderation-bot/logs:/app/logs
+    - /opt/wolfware/mounts/moderation-bot/logs:/wikihowbot/logs

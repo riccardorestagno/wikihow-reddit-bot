@@ -6,4 +6,4 @@ services:
     restart: unless-stopped
     env_file: .env
     volumes:
-    - /opt/wolfware/mounts/moderation-bot/logs:/app/logs
+    - /opt/wolfware/mounts/moderation-bot/logs:/wikihowbot/logs

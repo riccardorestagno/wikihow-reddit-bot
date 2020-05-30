@@ -3,12 +3,13 @@ FROM python:alpine
 
 LABEL Name=wikihow_reddit_bot Version=0.0.1
 
-# Our bot is in app, so copy that whole folder over to /app on the container filesystem
-WORKDIR /app
-COPY app .
+# Copy all files in wikihowbot as well as requirements.txt to the working directory of the container filesystem.
+WORKDIR /wikihowbot
+COPY wikihowbot .
+COPY requirements.txt .
 
 # Using pip:
 RUN python3 -m pip install -r requirements.txt
 
 # Start bot
-CMD ["python3", "-u", "./wikihowlink.py"]
+CMD ["python3", "-u", "./wikihowbot.py"]
