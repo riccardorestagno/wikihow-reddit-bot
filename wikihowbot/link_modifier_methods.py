@@ -46,7 +46,7 @@ def soup_session(url):
     try:
         session = requests.Session()
         amp_link = session.get(url)
-        return BeautifulSoup(amp_link.text, "html.parser")
+        return BeautifulSoup(amp_link.content, "html.parser")
     # If the submitted page couldn't be fetched, return None.
     except (ConnectionError, Exception):
         return None
