@@ -70,11 +70,7 @@ def source_added_check():
                 continue
 
             # Replies to post with wikiHow source link provided by OP.
-            link_to_reply = lmm.link_formatter(message_provided, post_reapproval=True)
-            if link_to_reply:
-                message.submission.reply(link_to_reply).mod.distinguish(how='yes')
-            else:
-                message.submission.reply("User-provided source: " + message_provided).mod.distinguish(how='yes')
+            message.submission.reply(lmm.link_formatter(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
 
             message.submission.mod.approve()  # Approves the post
             log_message("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
