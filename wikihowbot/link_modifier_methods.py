@@ -29,12 +29,9 @@ def link_formatter(comment, post_reapproval=False):
 
 def convert_amp_link_to_standard_format(link):
     non_amp_link = link.split('?', 1)[0]
+    url_prefix = non_amp_link.split('.wikihow.')[0].rsplit('/', 1)[1]
 
-    if 'google.com' in non_amp_link and '.wikihow.' in non_amp_link:
-        url_prefix = non_amp_link.split('.wikihow.')[0].rsplit('/', 1)[1]
-        non_amp_link = f"https://{url_prefix}.wikihow.{non_amp_link.split('.wikihow.')[1]}"
-
-    return non_amp_link
+    return f"https://{url_prefix}.wikihow.{non_amp_link.split('.wikihow.')[1]}"
 
 
 def is_url_amp(link):
