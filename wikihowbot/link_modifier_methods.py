@@ -28,13 +28,17 @@ def link_formatter(comment, post_reapproval=False):
 
 
 def convert_amp_link_to_standard_format(link):
-    non_amp_link = link.split('?', 1)[0]
-    url_prefix = non_amp_link.split('.wikihow.')[0].rsplit('/', 1)[1]
+    """Converts an AMP url to a standard format url."""
 
-    return f"https://{url_prefix}.wikihow.{non_amp_link.split('.wikihow.')[1]}"
+    non_amp_link = link.split('?', 1)[0]
+    url_prefix = non_amp_link.split('.wikihow')[0].rsplit('/', 1)[1]
+
+    return f"https://{url_prefix}.wikihow{non_amp_link.split('.wikihow')[1]}"
 
 
 def is_url_amp(link):
+    """Returns True if the url is an AMP link. Returns False otherwise."""
+
     link = link.lower()  # Make link lowercase.
 
     # If the string contains an AMP link, return True.
@@ -45,3 +49,15 @@ def is_url_amp(link):
 
     # If no AMP link was found in the string, return False.
     return False
+
+
+def is_wikihow_url_in_comment(comment):
+    """Returns True if the comment the user provided is a wikiHow url. Returns False otherwise."""
+
+    links = re.findall("(?P<url>https?://[^\s]+)", comment)
+    if links:
+        link = links[0].split('](', 1)[0].rsplit(')', 1)[0]
+    else:
+        return False
+
+    return ".wikihow" in link

@@ -60,7 +60,7 @@ def source_added_check():
     for message in bot_inbox:
 
         message_provided = urllib.parse.unquote(message.body)
-        if ".wikihow." in message_provided.lower() and message.submission.banned_by == "WikiHowLinkBot":
+        if message.submission.banned_by == "WikiHowLinkBot" and lmm.is_wikihow_url_in_comment(message_provided.lower()):
 
             try:
                 message.parent().mod.remove()  # Deletes the bots comment
@@ -105,8 +105,7 @@ def moderate_post(link, title, reminder):
                 continue
             comment_to_check = urllib.parse.unquote(top_level_comment.body)
             # Checks if any wikiHow domains are linked in the comments by the author or if mods already replied to post.
-            if (top_level_comment.author.name == submission.author.name and ".wikihow." in comment_to_check.lower()) \
-                    or any(mods == top_level_comment.author.name for mods in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(',')):
+            if top_level_comment.author.name == submission.author.name and lmm.is_wikihow_url_in_comment(comment_to_check.lower()):
 
                 wikihow_link = True
                 for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link.

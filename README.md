@@ -9,11 +9,9 @@ Monitors new posts on /r/disneyvacation to ensure all post requirements are met.
 
 Dependencies
 =================
-Supported Python versions: 3.6.0+ 
+Supported Python versions: 3.6+ 
 
 - PRAW
-- BeautifulSoup4
-- Requests
 
 
 Script Functionality
