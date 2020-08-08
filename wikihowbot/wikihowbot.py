@@ -60,7 +60,7 @@ def source_added_check():
     for message in bot_inbox:
 
         message_provided = urllib.parse.unquote(message.body)
-        if message.submission.banned_by == "WikiHowLinkBot" and lmm.is_wikihow_url_in_comment(message_provided):
+        if message.was_comment and message.submission.banned_by == "WikiHowLinkBot" and lmm.is_wikihow_url_in_comment(message_provided):
 
             try:
                 message.parent().mod.remove()  # Deletes the bots comment
