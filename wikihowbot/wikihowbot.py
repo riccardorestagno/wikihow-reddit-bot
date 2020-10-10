@@ -1,5 +1,6 @@
 import praw
 import time
+import traceback
 import urllib.parse
 from datetime import datetime, timedelta
 from os import environ, getcwd, mkdir, path
@@ -43,6 +44,13 @@ def connect_to_reddit():
                        user_agent=environ["WIKIHOWLINKBOT_USER_AGENT"],
                        username=environ["WIKIHOWLINKBOT_USERNAME"],
                        password=environ["WIKIHOWLINKBOT_PASSWORD"])
+
+
+def send_error_message(stack_trace):
+    """If a runtime error has occurred, PM a mod with the error details."""
+    reddit = connect_to_reddit()
+
+    reddit.redditor('Improbably_wrong').message(F'ERROR - r/buzzfeedbot', stack_trace)
 
 
 def source_added_check():
@@ -159,8 +167,13 @@ def moderate_posts():
 
 if __name__ == "__main__":
 
-    while True:
-        print("WikiHowLinkBot is starting @ " + str(datetime.now()))
-        moderate_posts()
-        print("Sweep finished @ " + str(datetime.now()))
-        time.sleep(5 * 60)  # Wait for 5 minutes before running again.
+    try:
+        while True:
+            print("WikiHowLinkBot is starting @ " + str(datetime.now()))
+            moderate_posts()
+            print("Sweep finished @ " + str(datetime.now()))
+            time.sleep(5 * 60)  # Wait for 5 minutes before running again.
+    except Exception as error:
+        print(f"An error has occurred: {error}")
+        send_error_message(traceback.format_exc())
+        time.sleep(5 * 60 * 60)  # Stop for 5 hours if an exception occurred.
