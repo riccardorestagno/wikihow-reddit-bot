@@ -177,4 +177,4 @@ if __name__ == "__main__":
     except Exception as error:
         print(f"An error has occurred: {error}")
         send_error_message(traceback.format_exc())
-        time.sleep(5 * 60 * 60)  # Stop for 5 hours if an exception occurred.
+        time.sleep(1 * 60 * 60)  # Stop for 1 hour if an exception occurred.
