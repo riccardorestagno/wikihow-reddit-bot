@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
-from os import getcwd, mkdir
+from os import getcwd, makedirs
 
 
 LOGS_FILEPATH = getcwd() + "/logs/WikiHowBot.log"
@@ -19,7 +19,7 @@ def create_log_file():
     """Creates directory and file for logs if it doesn't exist yet."""
 
     # Creates directory.
-    mkdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
+    makedirs(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
 
     # Creates a file at specified location.
     with open(LOGS_FILEPATH, 'w'):

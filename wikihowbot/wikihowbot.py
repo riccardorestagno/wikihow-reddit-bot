@@ -117,7 +117,7 @@ def moderate_posts():
     posts = subreddit.new(limit=50)
 
     # Creates log directory and file if it doesn't exist.
-    if not path.isdir(LOGS_FILEPATH.rsplit('/', 1)[0] + '/'):
+    if not path.exists(LOGS_FILEPATH):
         create_log_file()
 
     for post in posts:
