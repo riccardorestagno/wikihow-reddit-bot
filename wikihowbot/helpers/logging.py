@@ -19,7 +19,7 @@ def create_log_file():
     """Creates directory and file for logs if it doesn't exist yet."""
 
     # Creates directory.
-    makedirs(LOGS_FILEPATH.rsplit('/', 1)[0] + '/')
+    makedirs(LOGS_FILEPATH.rsplit('/', 1)[0] + '/', exist_ok=True)
 
     # Creates a file at specified location.
     with open(LOGS_FILEPATH, 'w'):
