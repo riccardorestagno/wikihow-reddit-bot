@@ -10,11 +10,13 @@ from helpers.logging import create_log_file, log_message, LOGS_FILEPATH
 from helpers.reddit import connect_to_reddit, minutes_posted, send_error_message
 
 
-SUBREDDIT_NAME = 'disneyvacation'
-POST_LINK_REMINDER_TEXT = "The mod team at /r/disneyvacation thanks you for your submission, however it has been " \
-                          "automatically removed since the link to the wikiHow source article was not provided." \
-                          "\n\nPlease reply to THIS COMMENT with the source article and your post " \
-                          "will be approved within at most 5 minutes."
+def get_post_link_reminder_text(subreddit_name):
+    """Returns the post link reminder text based on the subreddit being checked."""
+
+    return f"The mod team at /r/{subreddit_name} thanks you for your submission, however it has been " \
+           "automatically removed since the link to the wikiHow source article was not provided." \
+           "\n\nPlease reply to THIS COMMENT with the source article and your post " \
+           "will be approved within at most 5 minutes."
 
 
 def source_added_check():
@@ -52,7 +54,7 @@ def source_added_check():
     reddit.inbox.mark_read(unread_messages)
 
 
-def moderate_post(link, title):
+def moderate_post(link, title, subreddit_name):
     """
     If post was made over 5 minutes ago, ensure a wikiHow link was posted as a top-level comment reply.
     If the wikiHow link was provided in plain-text desktop format, post is skipped.
@@ -97,7 +99,7 @@ def moderate_post(link, title):
 
     # Replies to post and stickies the reply + distinguish.
     if not wikihow_link:
-        submission.reply(f"Hey /u/{submission.author.name}\n\n{POST_LINK_REMINDER_TEXT}").mod.distinguish(how='yes', sticky=True)
+        submission.reply(f"Hey /u/{submission.author.name}\n\n{get_post_link_reminder_text(subreddit_name)}").mod.distinguish(how='yes', sticky=True)
         log_message(f"Post FAILED - {title} (https://www.reddit.com{link})\n")
         time.sleep(3)  # Prevents Reddit from detecting spam.
         submission.mod.remove()  # Deletes the post.
@@ -113,20 +115,21 @@ def moderate_posts():
 
     reddit = connect_to_reddit()
 
-    subreddit = reddit.subreddit(SUBREDDIT_NAME)
-    posts = subreddit.new(limit=50)
+    for subreddit_name in ['disneyvacation', 'wikihowqa']:
+        subreddit = reddit.subreddit(subreddit_name)
+        posts = subreddit.new(limit=50)
 
-    # Creates log directory and file if it doesn't exist.
-    if not path.exists(LOGS_FILEPATH):
-        create_log_file()
+        # Creates log directory and file if it doesn't exist.
+        if not path.exists(LOGS_FILEPATH):
+            create_log_file()
 
-    for post in posts:
-        if minutes_posted(post) < 5:
-            continue
-        if minutes_posted(post) > 12:
-            break
+        for post in posts:
+            if minutes_posted(post) < 5:
+                continue
+            if minutes_posted(post) > 12:
+                break
 
-        moderate_post(post.permalink, post.title)
+            moderate_post(post.permalink, post.title, subreddit_name)
 
     source_added_check()  # Checks bots inbox for comment replies with wikiHow link.
 
