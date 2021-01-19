@@ -67,8 +67,8 @@ def moderate_post(link, title, subreddit_name):
     submission = reddit.submission(url='https://www.reddit.com' + link)
     wikihow_link = False
 
-    # Skips if post was made by a mod or if post author was deleted.
-    if not submission.author or submission.author.name in environ["WIKIHOWLINKBOT_DISNEYVACATION_MODS"].split(','):
+    # Skips if post was stickied/distinguished by a mod or if post author was deleted.
+    if submission.stickied or submission.distinguished or not submission.author:
         return
 
     submission.comments.replace_more(limit=0)
