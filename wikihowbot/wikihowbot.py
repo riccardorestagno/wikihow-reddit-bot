@@ -1,9 +1,10 @@
 import prawcore
+import socket
 import time
 import traceback
 import urllib.parse
 from datetime import datetime
-from os import environ, path
+from os import path
 
 import helpers.link_modifier_methods as lmm
 from helpers.logging import create_log_file, log_message, LOGS_FILEPATH
@@ -145,11 +146,13 @@ if __name__ == "__main__":
         except prawcore.exceptions.ResponseException as httpError:
             if httpError.response.status_code == 503:
                 log_message(f"Reddit is temporarily down. Waiting 5 minutes.")
-                time.sleep(5 * 60)  # Wait for 5 minutes before running again.
+                time.sleep(5 * 60)  # Temporary connection error. Wait for 5 minutes before running again.
             else:
                 print(f"A HTTP error has occurred. Received {httpError.response.status_code} HTTP response.")
                 send_error_message(f"A HTTP error has occurred. Received {httpError.response.status_code} HTTP response.")
                 time.sleep(1 * 60 * 60)  # Stop for 1 hour if a HTTP exception occurred (Not 503).
+        except socket.gaierror:
+            time.sleep(5 * 60)  # Temporary connection error. Wait 5 minutes before running again.
         except Exception as error:
             print(f"An error has occurred: {error}")
             send_error_message(traceback.format_exc())
