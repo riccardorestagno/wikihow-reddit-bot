@@ -3,6 +3,11 @@ from datetime import datetime, timedelta
 from os import environ
 
 
+bot_username = "WikiHowLinkBot"
+moderated_subreddits = ['disneyvacation', 'wikihowqa']
+reddit_url = "https://www.reddit.com"
+
+
 def connect_to_reddit():
     """Connects the bot to the Reddit client."""
 

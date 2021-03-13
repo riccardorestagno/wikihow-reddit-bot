@@ -7,11 +7,11 @@ from email.mime.multipart import MIMEMultipart
 from os import getcwd, makedirs
 
 
-LOGS_FILEPATH = getcwd() + "/logs/WikiHowBot.log"
+logs_filepath = getcwd() + "/logs/WikiHowBot.log"
 
 
 def log_message(message):
-    with open(LOGS_FILEPATH, 'a', errors="ignore") as output_file:
+    with open(logs_filepath, 'a', errors="ignore") as output_file:
         output_file.writelines(message)
 
 
@@ -19,10 +19,10 @@ def create_log_file():
     """Creates directory and file for logs if it doesn't exist yet."""
 
     # Creates directory.
-    makedirs(LOGS_FILEPATH.rsplit('/', 1)[0] + '/', exist_ok=True)
+    makedirs(logs_filepath.rsplit('/', 1)[0] + '/', exist_ok=True)
 
     # Creates a file at specified location.
-    with open(LOGS_FILEPATH, 'w'):
+    with open(logs_filepath, 'w'):
         pass
 
 

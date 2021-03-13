@@ -6,17 +6,14 @@ from datetime import datetime
 from os import path
 
 import helpers.link_modifier_methods as lmm
-from helpers.logging import create_log_file, log_message, LOGS_FILEPATH
-from helpers.reddit import connect_to_reddit, minutes_posted, send_error_message
+from helpers.logging import create_log_file, log_message, logs_filepath
+from helpers.reddit import bot_username, connect_to_reddit, minutes_posted, moderated_subreddits, reddit_url, send_error_message
 
 
-def get_post_link_reminder_text(subreddit_name):
-    """Returns the post link reminder text based on the subreddit being checked."""
-
-    return f"The mod team at /r/{subreddit_name} thanks you for your submission, however it has been " \
-           "automatically removed since the link to the wikiHow source article was not provided." \
-           "\n\nPlease reply to THIS COMMENT with the source article and your post " \
-           "will be approved within at most 5 minutes."
+post_link_reminder_text = f"The mod team thanks you for your submission, however it has been " \
+                           "automatically removed since the link to the wikiHow source article was not provided." \
+                           "\n\nPlease reply to THIS COMMENT with the source article and your post " \
+                           "will be approved within at most 5 minutes."
 
 
 def source_added_check():
@@ -34,27 +31,27 @@ def source_added_check():
     for message in bot_inbox:
 
         message_provided = urllib.parse.unquote(message.body)
-        if message.was_comment and message.submission.banned_by == "WikiHowLinkBot" and lmm.is_wikihow_url_in_comment(message_provided):
+        if message.was_comment and message.submission.banned_by == bot_username and lmm.is_wikihow_url_in_comment(message_provided):
 
             try:
-                message.parent().mod.remove()  # Deletes the bots comment
-                message.mod.remove()  # Deletes user comment
+                message.parent().mod.remove()  # Deletes the bots comment.
+                message.mod.remove()  # Deletes the users comment.
             except AttributeError:
                 reddit.inbox.mark_read([message])
                 continue
 
-            # Replies to post with wikiHow source link provided by OP.
+            # Replies to post with the wikiHow source link provided by OP.
             message.submission.reply(lmm.link_formatter(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
 
-            message.submission.mod.approve()  # Approves the post
-            log_message("Post RE-APPROVED - " + message.submission.title + " (www.reddit.com" + message.submission.permalink + ")\n")
+            message.submission.mod.approve()  # Approves the post.
+            log_message(f"Post RE-APPROVED - {message.submission.title} ({reddit_url}{message.submission.permalink})\n")
 
         unread_messages.append(message)
 
     reddit.inbox.mark_read(unread_messages)
 
 
-def moderate_post(link, title, subreddit_name):
+def moderate_post(post):
     """
     If post was made over 5 minutes ago, ensure a wikiHow link was posted as a top-level comment reply.
     If the wikiHow link was provided in plain-text desktop format, post is skipped.
@@ -64,72 +61,67 @@ def moderate_post(link, title, subreddit_name):
 
     reddit = connect_to_reddit()
 
-    submission = reddit.submission(url='https://www.reddit.com' + link)
+    submission = reddit.submission(url=f"{reddit_url}{post.permalink}")
     wikihow_link = False
 
-    # Skips if post was stickied/distinguished by a mod or if post author was deleted.
+    # Skips if the post was stickied/distinguished by a mod or if the post author was deleted.
     if submission.stickied or submission.distinguished or not submission.author:
         return
 
     submission.comments.replace_more(limit=0)
-    # Searches through top-level comments and checks if there is a wikiHow link in them.
+    # Searches through the top-level comments and checks for a wikiHow link provided by OP.
     for top_level_comment in submission.comments:
 
         if not top_level_comment.author:  # User was deleted.
             continue
 
-        if top_level_comment.author.name == 'WikiHowLinkBot':  # Bot already replied with the source.
+        if top_level_comment.author.name == bot_username:  # Bot already replied with the source.
             return
 
         comment_to_check = urllib.parse.unquote(top_level_comment.body)
 
-        # Checks if any wikiHow domains are linked in the comments by the author or if mods already replied to post.
+        # Checks if any wikiHow domains are linked in the comments by the author or if the mods already replied to post.
         if top_level_comment.author.name == submission.author.name and lmm.is_wikihow_url_in_comment(comment_to_check):
 
             wikihow_link = True
-            for comment in top_level_comment.replies:  # Checks if bot already replied with a desktop link.
-                if comment.author and comment.author.name == 'WikiHowLinkBot':
+            for comment in top_level_comment.replies:  # Checks if the bot already replied with a correctly formatted link.
+                if comment.author and comment.author.name == bot_username:
                     return
 
-            # Replies with plain-text desktop link if comment containing link isn't formatted correctly.
+            # Replies with a plain-text desktop link if a comment containing the wikiHow link isn't formatted correctly.
             link_to_reply = lmm.link_formatter(comment_to_check)
             if link_to_reply:
                 top_level_comment.reply(link_to_reply)
             break
 
-    # Replies to post and stickies the reply + distinguish.
+    # If no wikiHow link was found, the bot replies to the post with a reminder to provide the source link of the image.
     if not wikihow_link:
-        submission.reply(f"Hey /u/{submission.author.name}\n\n{get_post_link_reminder_text(subreddit_name)}").mod.distinguish(how='yes', sticky=True)
-        log_message(f"Post FAILED - {title} (https://www.reddit.com{link})\n")
+        submission.reply(f"Hey /u/{submission.author.name}\n\n{post_link_reminder_text}").mod.distinguish(how='yes', sticky=True)
+        log_message(f"Post FAILED - {post.title} ({reddit_url}{post.permalink})\n")
         time.sleep(3)  # Prevents Reddit from detecting spam.
         submission.mod.remove()  # Deletes the post.
     else:
-        log_message(f"Post PASSED - {title} (https://www.reddit.com{link})\n")
+        log_message(f"Post PASSED - {post.title} ({reddit_url}{post.permalink})\n")
 
 
 def moderate_posts():
-    """
-    Iterates through all new submissions on r/disneyvacation that were posted between 5-12 minutes ago to ensure
-    they meet all posting requirements.
-    """
+    """Iterates through all new submissions on moderated subreddits to ensure they meet all posting requirements."""
+
+    # Creates log directory and file if it doesn't exist.
+    if not path.exists(logs_filepath):
+        create_log_file()
 
     reddit = connect_to_reddit()
+    subreddit = reddit.subreddit('+'.join(moderated_subreddits))
+    posts = subreddit.new(limit=50)
 
-    for subreddit_name in ['disneyvacation', 'wikihowqa']:
-        subreddit = reddit.subreddit(subreddit_name)
-        posts = subreddit.new(limit=50)
+    for post in posts:
+        if minutes_posted(post) < 5:
+            continue
+        if minutes_posted(post) > 30:
+            break
 
-        # Creates log directory and file if it doesn't exist.
-        if not path.exists(LOGS_FILEPATH):
-            create_log_file()
-
-        for post in posts:
-            if minutes_posted(post) < 5:
-                continue
-            if minutes_posted(post) > 12:
-                break
-
-            moderate_post(post.permalink, post.title, subreddit_name)
+        moderate_post(post)
 
     source_added_check()  # Checks bots inbox for comment replies with wikiHow link.
 
