@@ -1,8 +1,12 @@
 import re
 
 
-def link_formatter(comment, post_reapproval=False):
-    """Formats user-provided url to a plain-text desktop link, if not properly formatted."""
+def process_comment_reply(comment, post_reapproval=False):
+    """
+    Formats the user-provided url to a plain-text desktop link, if not properly formatted.
+    Returns A prefix indicating the change made to the link followed by the correctly formatted link
+    """
+
     comment_to_reply = ""
 
     links = re.findall("(?P<url>https?://[^\s]+)", comment)

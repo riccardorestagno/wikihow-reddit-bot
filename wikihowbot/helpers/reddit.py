@@ -18,7 +18,7 @@ def connect_to_reddit():
                        password=environ["WIKIHOWLINKBOT_PASSWORD"])
 
 
-def minutes_posted(submission):
+def get_minutes_posted(submission):
     """Gets the time that passed (in minutes) from when the post was made. All time is converted to UTC."""
 
     time_created = submission.created_utc
