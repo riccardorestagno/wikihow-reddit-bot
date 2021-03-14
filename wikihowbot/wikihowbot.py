@@ -41,7 +41,7 @@ def source_added_check():
                 continue
 
             # Replies to post with the wikiHow source link provided by OP.
-            message.submission.reply(lmm.process_comment_reply(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
+            message.submission.reply(lmm.process_comment(message_provided, post_reapproval=True)).mod.distinguish(how='yes')
 
             message.submission.mod.approve()  # Approves the post.
             log_message(f"Post RE-APPROVED - {message.submission.title} ({reddit_url}{message.submission.permalink})\n")
@@ -89,7 +89,7 @@ def moderate_post(post):
                         return
 
                 # Replies with a plain-text desktop link if a comment containing the wikiHow link isn't formatted correctly.
-                link_to_reply = lmm.process_comment_reply(comment_to_check)
+                link_to_reply = lmm.process_comment(comment_to_check)
                 if link_to_reply:
                     top_level_comment.reply(link_to_reply)
 

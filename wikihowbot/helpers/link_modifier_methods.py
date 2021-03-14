@@ -1,10 +1,10 @@
 import re
 
 
-def process_comment_reply(comment, post_reapproval=False):
+def process_comment(comment, post_reapproval=False):
     """
     Formats the user-provided url to a plain-text desktop link, if not properly formatted.
-    Returns A prefix indicating the change made to the link followed by the correctly formatted link
+    Returns a prefix indicating the change made to the link followed by the correctly formatted link.
     """
 
     comment_to_reply = ""

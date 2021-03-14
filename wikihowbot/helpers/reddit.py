@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from os import environ
 
 
-bot_username = "WikiHowLinkBot"
+bot_username = environ["WIKIHOWLINKBOT_USERNAME"]
 moderated_subreddits = ['disneyvacation', 'wikihowqa']
 reddit_url = "https://www.reddit.com"
 
