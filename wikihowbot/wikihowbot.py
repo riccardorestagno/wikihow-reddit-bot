@@ -134,13 +134,15 @@ if __name__ == "__main__":
             print("Sweep finished @ " + str(datetime.now()))
             time.sleep(5 * 60)  # Wait for 5 minutes before running again.
         except prawcore.exceptions.ResponseException as httpError:
-            if httpError.response.status_code == 503 or httpError.response.status_code == 502:
+            if httpError.response.status_code == 500 or \
+                httpError.response.status_code == 502 or \
+                httpError.response.status_code == 503:
                 log_message(f"Reddit is temporarily down. Waiting 5 minutes.")
                 time.sleep(5 * 60)  # Temporary connection error. Wait for 5 minutes before running again.
             else:
                 print(f"A HTTP error has occurred. Received {httpError.response.status_code} HTTP response.")
                 send_error_message(f"A HTTP error has occurred. Received {httpError.response.status_code} HTTP response.")
-                time.sleep(1 * 60 * 60)  # Stop for 1 hour if a HTTP exception occurred (Not 503).
+                time.sleep(1 * 60 * 60)  # Stop for 1 hour if an unhandled HTTP exception occurred.
         except prawcore.exceptions.RequestException:
             time.sleep(5 * 60)  # Temporary connection error. Wait 5 minutes before running again.
         except Exception as error:
